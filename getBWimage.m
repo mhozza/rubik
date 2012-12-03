@@ -28,8 +28,8 @@ function [BW] = getBWimage(I)
         E = min(E,tmp);
     end
     
-    figure, imshow(BW);
-    figure, imshow(E);
+    %figure, imshow(BW);
+    %figure, imshow(E);
     
     %zjednotenie a erozia hran a BW zloziek
     BW = min(BW,E);
