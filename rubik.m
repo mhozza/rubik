@@ -7,7 +7,7 @@ function rubik(I)
     figure, imshow(I);
     
     BW = getBWimage(I);
-    figure, imshow(BW);
+    %figure, imshow(BW);
     
     Ilbl = getLabels(I, BW);
     figure, imshow(Ilbl);

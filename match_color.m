@@ -13,7 +13,7 @@
 
 
 
-function [r g b] = match_color(rgbcolor)
+function [matched_color] = match_color(color)
 	RED = [196, 30, 58];
 	GREEN = [0, 158, 96];
 	BLUE = [0, 81, 186];
@@ -67,48 +67,43 @@ function [r g b] = match_color(rgbcolor)
 		score = universal_score(dh, ds, dv, 0, 8/12, 4/12);
 	end
 
-	[h s v] = rgb2hsv(rgbcolor);
+	[h s v] = rgb2hsv(color);
 	score = 0;
-	rubikcolor = 0;
+	matched_color = 0;
 
 	scr = score_red(h,s,v);
 	if scr>score
 	 	score = scr;
-	 	rubikcolor = RED;
+	 	matched_color = RED;
 	end
 
 	scr = score_green(h,s,v);
 	if scr>score
 	 	score = scr;
-	 	rubikcolor = GREEN;
+	 	matched_color = GREEN;
 	end
 
 	scr = score_blue(h,s,v);
 	if scr>score
 	 	score = scr;
-	 	rubikcolor = BLUE;
+	 	matched_color = BLUE;
 	end
 
 	scr = score_orange(h,s,v);
 	if scr>score
 	 	score = scr;
-	 	rubikcolor = ORANGE;
+	 	matched_color = ORANGE;
 	end
 
 	scr = score_yellow(h,s,v);
 	if scr>score
 	 	score = scr;
-	 	rubikcolor = YELLOW;
+	 	matched_color = YELLOW;
 	end
 
 	scr = score_white(h,s,v);
-	if scr>score
-	 	score = scr;
-	 	rubikcolor = WHITE;
-	end
-
-	r = rubikcolor(1);
-	g = rubikcolor(2);
-	b = rubikcolor(3);
+    if scr>score
+	 	matched_color = WHITE;
+    end
 
 end
