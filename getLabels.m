@@ -15,7 +15,7 @@ function [Ilbl] = getLabels(Iorig, BW)
 
     %najdeme komponenty a ich vlastnosti
     components = bwconncomp(BW);
-    prop = regionprops(components,'PixelList','Solidity','MinorAxisLength','MajorAxisLength', 'BoundingBox','Centroid','Extrema','ConvexArea');
+    prop = regionprops(components,'PixelList','Solidity','MinorAxisLength','MajorAxisLength', 'BoundingBox','Extrema','ConvexArea');
     %obrazok s najdenymi labelami kocky
     Ilbl = ones(size(Iorig));
     
@@ -41,33 +41,26 @@ function [Ilbl] = getLabels(Iorig, BW)
         %-nie je prilis maly
         if (~onBorder && axisRatio>MIN_AXIS_RATIO && prop(i).Solidity>MIN_SOLIDITY_RATIO &&...
                 relativeSize<MAX_SQUARE_SIZE && n>MIN_SQUARE_PIXELS)
-            %skopirujeme casti kocky z povodneho obrazku
-            R = 0.0;
-            G = 0.0;
-            B = 0.0;
+            
+            %spocitame hodnoty jednotlivych zloziek
+            rTot = 0.; gTot = 0.; bTot = 0.;
             for j=1:n
-                 Ilbl(pixels(j,2),pixels(j,1),:) = Iorig(pixels(j,2),pixels(j,1),:);                                                         
-                 R=R+Ilbl(pixels(j,2),pixels(j,1),1);
-                 G=G+Ilbl(pixels(j,2),pixels(j,1),2);
-                 B=B+Ilbl(pixels(j,2),pixels(j,1),3);
-                 Ilbl(pixels(j,2),pixels(j,1),:) = 0;
+                 rTot = rTot + double(Iorig(pixels(j,2),pixels(j,1),1));
+                 gTot = gTot + double(Iorig(pixels(j,2),pixels(j,1),2));
+                 bTot = bTot + double(Iorig(pixels(j,2),pixels(j,1),3));
             end
 
-                        
             %najdeme okraje
-            bounds = bwtraceboundary(BW,[round(prop(i).Extrema(1,2)) round(prop(i).Extrema(1,1))],'N');
-            for j=1:length(bounds)
-                Ilbl(bounds(j,1),bounds(j,2),:) = 255;
-            end
+            %bounds = bwtraceboundary(BW,[round(prop(i).Extrema(1,2)) round(prop(i).Extrema(1,1))],'N');
+            %for j=1:length(bounds)
+            %    Ilbl(bounds(j,1),bounds(j,2),:) = 255;
+            %end
 
-            %najdeme stred            
-            stred = prop(i).Centroid;
-            avgcolor = [round(R/n), round(G/n), round(B/n)];
-            [r g b] = match_color(avgcolor);
-            Ilbl((round(stred(2))-SZ):(round(stred(2))+SZ), (round(stred(1))-SZ):(round(stred(1))+SZ), 1) = r;            
-            Ilbl((round(stred(2))-SZ):(round(stred(2))+SZ), (round(stred(1))-SZ):(round(stred(1))+SZ), 2) = g;            
-            Ilbl((round(stred(2))-SZ):(round(stred(2))+SZ), (round(stred(1))-SZ):(round(stred(1))+SZ), 3) = b;            
-        end       
+            color = match_color([round(rTot/n) round(gTot/n) round(bTot/n)]);
+            for j=1:n
+                Ilbl(pixels(j,2),pixels(j,1),:) = color;
+            end
+        end
 
     end
     
