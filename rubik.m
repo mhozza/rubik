@@ -32,12 +32,14 @@ function rubik(I)
     medSize = median(sizes);
     medDist = median(closestDist);
     
+    sides = getLabelSide(boundsList);
+    
     
     for i=1:n
         
         %berieme len nieco vhodne velke a vhodne blizko k ostatnym
-        if (sizes(i) > medSize/3 && sizes(i)< medSize*3 && closestDist(i)<3*medDist &&...
-                closestDist(i)>medDist/3)
+        if (sizes(i) > medSize/3 && sizes(i) < medSize*3 &&...
+                closestDist(i) < 3*medDist && closestDist(i) > medDist/3)
             for j=1:length(pixelList{i})
                 img(pixelList{i}(j,1),pixelList{i}(j,2),:) = colors(i,:);
             end
@@ -45,6 +47,18 @@ function rubik(I)
             for j=1:length(boundsList{i})
                 img(boundsList{i}(j,1),boundsList{i}(j,2),:) = [255 255 255];
             end
+            
+            text = 'U';
+            if (sides(i)==1)
+                text = 'L';
+            end
+            if (sides(i)==2)
+                text = 'R';
+            end
+            
+            txtInserter = vision.TextInserter(text,'Color',[0 0 0],'Location',[centroids(i,1)-10, centroids(i,2)-10]);
+            img = step(txtInserter,img);
+            img(boundsList{i}(1,1),boundsList{i}(1,2),:) = [255 0 0];
 
         end
     end
