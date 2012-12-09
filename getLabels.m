@@ -1,29 +1,34 @@
 %ziska casti obrazku zodpovedajuce stvorcekom na kocke
-%vstup povodny obrazok a BW obrazok s odsepraovanymi komponentami
-%TODO: format vystupu, zatial vrati len obrazok
-function [Ilbl] = getLabels(Iorig, BW)
+%vystup: zoznam vlastnosti pre kazdy najdeny label:
+%pixelList - pixely labelu
+%boundsList - pixely okraja
+%centroids - necakane centroid labelu
+%colors - identifikovana farba labelu
+function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
 
     FORBIDDEN_BORDER = .1;
     MIN_SOLIDITY_RATIO = .85;
     MIN_AXIS_RATIO = .15;
     MAX_SQUARE_SIZE = .03;
     MIN_SQUARE_PIXELS = 100;
-    SZ = 15;
 
     [xsz ysz ~] = size(BW);
     pxcnt = xsz*ysz;
 
     %najdeme komponenty a ich vlastnosti
     components = bwconncomp(BW);
-    prop = regionprops(components,'PixelList','Solidity','MinorAxisLength','MajorAxisLength', 'BoundingBox','Extrema','ConvexArea');
-    %obrazok s najdenymi labelami kocky
-    Ilbl = ones(size(Iorig));
+    prop = regionprops(components,'PixelList','Solidity','MinorAxisLength','MajorAxisLength', 'BoundingBox','Extrema','ConvexArea','Centroid');
+    
+    pixelList = {};
+    boundsList = {};
+    centroids = [];
+    colors = [];
     
     %prejdeme vsetky komponenty BW obrazku
     for i=1:length(prop)
         
         %pixely komponentu
-        pixels = prop(i).PixelList;        
+        pixels = prop(i).PixelList;
         [n ~] = size(pixels);
         relativeSize = n/pxcnt;
         axisRatio = prop(i).MinorAxisLength/prop(i).MajorAxisLength;
@@ -42,6 +47,12 @@ function [Ilbl] = getLabels(Iorig, BW)
         if (~onBorder && axisRatio>MIN_AXIS_RATIO && prop(i).Solidity>MIN_SOLIDITY_RATIO &&...
                 relativeSize<MAX_SQUARE_SIZE && n>MIN_SQUARE_PIXELS)
             
+            centroids = [centroids; [prop(i).Centroid(2) prop(i).Centroid(1)]];
+            pixelList{end+1} = [];
+            for j=1:n
+                pixelList{end}(end+1,:) = [pixels(j,2) pixels(j,1)];
+            end
+            
             %spocitame hodnoty jednotlivych zloziek
             rTot = 0.; gTot = 0.; bTot = 0.;
             for j=1:n
@@ -51,20 +62,15 @@ function [Ilbl] = getLabels(Iorig, BW)
             end
 
             %najdeme okraje
-            %bounds = bwtraceboundary(BW,[round(prop(i).Extrema(1,2)) round(prop(i).Extrema(1,1))],'N');
-            %for j=1:length(bounds)
-            %    Ilbl(bounds(j,1),bounds(j,2),:) = 255;
-            %end
+            bounds = bwtraceboundary(BW,[round(prop(i).Extrema(1,2)) round(prop(i).Extrema(1,1))],'N');
+            boundsList{end+1} = bounds;
 
             color = match_color([round(rTot/n) round(gTot/n) round(bTot/n)]);
-            for j=1:n
-                Ilbl(pixels(j,2),pixels(j,1),:) = color;
-            end
+            colors = [colors; color(:)'];
+            
         end
 
     end
-    
-    Ilbl = uint8(Ilbl);
 
 end
 
