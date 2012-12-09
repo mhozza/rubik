@@ -8,7 +8,7 @@ VECTOR_LEN = 6;
 
 %vychylka od vertikaly
 %predpocitame tangens a staci uz len porovnat pomer y a x zlozky vektora,
-%nemusime pocitat uhol
+%nemusime pocitat uhol, akoze optimalizacia
 LIM = tan(degtorad(80));
 
 %pomer poctu jednych vektorov k druhym, ktory ked prekrocime, tak zaradime

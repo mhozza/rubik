@@ -44,8 +44,8 @@ function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
         %-nie je prilis deravy
         %-nie je prilis velky
         %-nie je prilis maly
-        if (~onBorder && axisRatio>MIN_AXIS_RATIO && prop(i).Solidity>MIN_SOLIDITY_RATIO &&...
-                relativeSize<MAX_SQUARE_SIZE && n>MIN_SQUARE_PIXELS)
+        if (~onBorder && axisRatio > MIN_AXIS_RATIO && prop(i).Solidity > MIN_SOLIDITY_RATIO &&...
+                relativeSize < MAX_SQUARE_SIZE && n > MIN_SQUARE_PIXELS)
             
             centroids = [centroids; [prop(i).Centroid(2) prop(i).Centroid(1)]];
             pixelList{end+1} = [];
@@ -56,9 +56,9 @@ function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
             %spocitame hodnoty jednotlivych zloziek
             rTot = 0.; gTot = 0.; bTot = 0.;
             for j=1:n
-                 rTot = rTot + double(Iorig(pixels(j,2),pixels(j,1),1));
-                 gTot = gTot + double(Iorig(pixels(j,2),pixels(j,1),2));
-                 bTot = bTot + double(Iorig(pixels(j,2),pixels(j,1),3));
+                 rTot = rTot + double(Iorig(pixels(j,2), pixels(j,1),1));
+                 gTot = gTot + double(Iorig(pixels(j,2), pixels(j,1),2));
+                 bTot = bTot + double(Iorig(pixels(j,2), pixels(j,1),3));
             end
 
             %najdeme okraje
