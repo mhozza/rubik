@@ -3,7 +3,7 @@
 %pixelList - pixely labelu
 %boundsList - pixely okraja
 %centroids - necakane centroid labelu
-%colors - identifikovana farba labelu
+%colors - priemerna farba labelu
 function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
 
     FORBIDDEN_BORDER = .1;
