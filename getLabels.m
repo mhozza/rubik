@@ -18,7 +18,8 @@ function [Ilbl] = getLabels(Iorig, BW)
     prop = regionprops(components,'PixelList','Solidity','MinorAxisLength','MajorAxisLength', 'BoundingBox','Extrema','ConvexArea');
     %obrazok s najdenymi labelami kocky
     Ilbl = ones(size(Iorig));
-    
+    colors = [];
+
     %prejdeme vsetky komponenty BW obrazku
     for i=1:length(prop)
         
@@ -55,7 +56,7 @@ function [Ilbl] = getLabels(Iorig, BW)
             %for j=1:length(bounds)
             %    Ilbl(bounds(j,1),bounds(j,2),:) = 255;
             %end
-
+            colors = [colors; [round(rTot/n) round(gTot/n) round(bTot/n)]];
             color = match_color([round(rTot/n) round(gTot/n) round(bTot/n)]);
             for j=1:n
                 Ilbl(pixels(j,2),pixels(j,1),:) = color;
@@ -65,6 +66,7 @@ function [Ilbl] = getLabels(Iorig, BW)
     end
     
     Ilbl = uint8(Ilbl);
+    colors
 
 end
 
