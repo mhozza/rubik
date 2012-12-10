@@ -2,6 +2,9 @@
 %suboru (napr. 'fotka.JPG'
 function run(which)
 
+%kvoli kompatibilite s matlabom 2011a - dufam ze to nebude robit problemy.
+vision.setCoordinateSystem('RC');
+
 if (strcmp(which,'all'))
     files = dir('./images');
     for i=1:length(files)
