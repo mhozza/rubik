@@ -65,8 +65,7 @@ function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
             bounds = bwtraceboundary(BW,[round(prop(i).Extrema(1,2)) round(prop(i).Extrema(1,1))],'N');
             boundsList{end+1} = bounds;
 
-            color = match_color([round(rTot/n) round(gTot/n) round(bTot/n)]);
-            colors = [colors; color(:)'];
+            colors = [colors; [round(rTot/n) round(gTot/n) round(bTot/n)]];
             
         end
 
