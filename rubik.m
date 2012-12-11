@@ -9,7 +9,12 @@ function rubik(I)
     BW = getBWimage(I);
     %figure, imshow(BW);
     
-    Ilbl = getLabels(I, BW);
+    [Ilbl colors] = getLabels(I, BW);
     figure, imshow(Ilbl);
-    
+
+    colors
+    G=group_colors(colors);
+    for i=1:length(G)
+        G{i}
+    end
 end

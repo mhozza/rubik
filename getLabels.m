@@ -1,7 +1,7 @@
 %ziska casti obrazku zodpovedajuce stvorcekom na kocke
 %vstup povodny obrazok a BW obrazok s odsepraovanymi komponentami
 %TODO: format vystupu, zatial vrati len obrazok
-function [Ilbl] = getLabels(Iorig, BW)
+function [Ilbl colors] = getLabels(Iorig, BW)
 
     FORBIDDEN_BORDER = .1;
     MIN_SOLIDITY_RATIO = .85;
@@ -56,17 +56,17 @@ function [Ilbl] = getLabels(Iorig, BW)
             %for j=1:length(bounds)
             %    Ilbl(bounds(j,1),bounds(j,2),:) = 255;
             %end
-            colors = [colors; [round(rTot/n) round(gTot/n) round(bTot/n)]];
+            avgcolor = [round(rTot/n) round(gTot/n) round(bTot/n)];
+            colors = [colors; avgcolor];
             color = match_color([round(rTot/n) round(gTot/n) round(bTot/n)]);
             for j=1:n
-                Ilbl(pixels(j,2),pixels(j,1),:) = color;
+                Ilbl(pixels(j,2),pixels(j,1),:) = avgcolor;
             end
         end
 
     end
     
     Ilbl = uint8(Ilbl);
-    colors
 
 end
 

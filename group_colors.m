@@ -1,8 +1,8 @@
 function color_groups=group_colors(colors)    
 
-    function similar=is_similar(color1, color2)
+    function similar=is_similar(color1, color2)        
         LAB_DIST = 15;
-        dist = sqrt( (color1(1)-color2(1))^2 + (color1(2)-color2(2))^2 + (color1(3)-color2(3))^2);
+        dist = sqrt(  (color1(2)-color2(2))^2 + (color1(3)-color2(3))^2);
         if (dist<LAB_DIST)
            similar = true;        
         else
@@ -13,7 +13,7 @@ function color_groups=group_colors(colors)
     function color=lab1(rgb)
         %drbneme farby do 1 x 1 x 3 pola, lebo to tak RGB2Lab funkcia chce
         tmp = zeros(1,1,3);        
-        tmp(1,i,:) = rgb;
+        tmp(1,1,:) = rgb;
         color = RGB2Lab(tmp);    
     end    
 
@@ -24,6 +24,7 @@ function color_groups=group_colors(colors)
             if is_similar(lab1(colors(i,:)), lab1(color_groups{j}(1,:)))
                 color_groups{j} = [color_groups{j}; colors(i,:)];
                 nenasiel = false;
+                break;
             end
         end
 
