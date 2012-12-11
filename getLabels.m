@@ -57,16 +57,17 @@ function [Ilbl] = getLabels(Iorig, BW)
             %    Ilbl(bounds(j,1),bounds(j,2),:) = 255;
             %end
             colors = [colors; [round(rTot/n) round(gTot/n) round(bTot/n)]];
+            avgcolor = [round(rTot/n) round(gTot/n) round(bTot/n)];
             color = match_color([round(rTot/n) round(gTot/n) round(bTot/n)]);
+
             for j=1:n
-                Ilbl(pixels(j,2),pixels(j,1),:) = color;
+                Ilbl(pixels(j,2),pixels(j,1),:) = avgcolor;
             end
         end
 
     end
     
-    Ilbl = uint8(Ilbl);
-    colors
+    Ilbl = uint8(Ilbl);    
 
 end
 
