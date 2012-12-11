@@ -14,6 +14,10 @@ end
 if (strcmp(which,'other'))
     path = './images/other/';
 end
+if (strcmp(which,'pair'))
+    path = './images/pair/';
+end
+
 
 if (~strcmp(path,''))
     files = dir(path);
