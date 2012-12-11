@@ -73,14 +73,3 @@ function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
 
 end
 
-
-
-
-%     [H,T,R] = hough(rgb2gray(img));
-%     peaks = houghpeaks(H,10);
-%     lines = houghlines(rgb2gray(img),T,R,peaks,'MinLength',10,'FillGap',3);
-%     figure, imshow(rgb2gray(img)), hold on
-%     for i=1:length(lines)
-%         plot([lines(i).point1(1),lines(i).point2(1)],[lines(i).point1(2),lines(i).point2(2)],'Color','red');
-%     end
-%     hold off;

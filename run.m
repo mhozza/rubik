@@ -1,6 +1,6 @@
 %drbnite parameter 'all' ak chcete prejst vsetky fotky, inak dajte nazov
-%suboru (napr. 'fotka.JPG'
-%pridany paramter 'other' - prejde subory v priecnku ./images/other
+%suboru (napr. 'fotka.JPG')
+%parameter 'other' prejde subory v priecnku ./images/other
 function run(which)
 
 path = '';

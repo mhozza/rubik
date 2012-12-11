@@ -1,60 +1,93 @@
-%priradi kazdej oblasti stranu na kocke, kam patri
-%vstup: pixely obrysu kocky
-%vystup: cislo 1,2,3 ku kazdemu obrysu (1-vlavo, 2-vpravo, 3-hore)
-function [sides] = getLabelSide(labelBounds)
+%najde rohy stvorceka na kocke a zisti, na ktoru jej stenu patri (lava=1,
+%prava=2, horna=3)
+%UL,UD,UR,DR = pozicie rohov (Up,Left,Right,Down)
+%labelBounds - cellArray so suradnicami okraja stvorceka
+%edgeLen - priblizna dlzka hrany stvorceka
+function [side UL DL UR DR] = getLabelSide(labelBounds, edgeLen)
 
-%dlzka vektora prilepeneho k obrysu
-VECTOR_LEN = 6;
+%algoritmus: sweepujeme sikmou ciarou smerom z okraja obrazku obraz, kym
+%nenarazime na jeden z rohov.
+%pravdaze netreba sweep simulovat, len spocitame skore pre kazdy bod z
+%okraja stvorceka.
 
-%vychylka od vertikaly
-%predpocitame tangens a staci uz len porovnat pomer y a x zlozky vektora,
-%nemusime pocitat uhol, akoze optimalizacia
-LIM = tan(degtorad(80));
+%vaha y-osi, tj. sweeping line bude naklonena viac vertikalne ak vaha>1
+YW = 1.1;
 
-%pomer poctu jednych vektorov k druhym, ktory ked prekrocime, tak zaradime
-%stvorcek do majorantnej strany
-LR_QUOTIENT = 4;
+%pozicie rohov, najlepsie najdene skore, x-pozicia
+%ak je skore rovnake, vyberame to s x poziciou viac na okraj stvorceka
+UL = [];
+ULscore = 10^6;
+ULscoreX = 10^6;
+DL = [];
+DLscore = -10^6;
+DLscoreX = 10^6;
+UR = [];
+URscore = 10^6;
+URscoreX = -10^6;
+DR = [];
+DRscore = -10^6;
+DRscoreX = -10^6;
 
-n = length(labelBounds);
-sides = 1:n;
-
-for i=1:n
-    m = length(labelBounds{i});
-    %pocet vektorov ktore pravdepodobne patria lavej/pravej strane
-    left = 0;
-    right = 0;
+for i=1:size(labelBounds)
     
-    for j=1:m
-        %y a x zlozka vektora
-        dy = labelBounds{i}(j,1) - labelBounds{i}(1+mod(j-1+VECTOR_LEN,m),1);
-        dx = -labelBounds{i}(j,2) + labelBounds{i}(1+mod(j-1+VECTOR_LEN,m),2);
-        %vertikala, ignorujeme
-        if (dx == 0)
-            continue;
-        end
-        
-        %ak ma vychylku od vertikaly vacsiu ako 10 stupnov
-        if (abs(dy/dx) < LIM)
-            %uhol v prvom alebo tretom kvadrante
-            if (dx*dy>0 || (dy==0 && dx==-1))
-                right = right + 1;
-            %uhol v druhom alebo stvrtok kvadrante
-            else
-                left = left + 1;
-            end
-        end
-        
+     x = labelBounds(i,1);
+     y = labelBounds(i,2);
+     
+     if (x+y*YW<ULscore || (x+y*YW==ULscore && x<ULscoreX))
+         ULscore = x+y*YW;
+         ULscoreX = x;
+         UL = [x y];
+     end
+
+     if (x-y*YW>DLscore || (x-y*YW==DLscore && x<DLscoreX))
+         DLscore = x-y*YW;
+         DLscoreX = x;
+         DL = [x y];
+     end
+     
+     if (x-y*YW<URscore || (x-y*YW==URscore && x>URscoreX))
+         URscore = x-y*YW;
+         URscoreX = x;
+         UR = [x y];
+     end
+
+     if (x+y*YW>DRscore || (x+y*YW==DRscore && x>DRscoreX))
+         DRscore = x+y*YW;
+         DRscoreX = x;
+         DR = [x y];
+     end
+end
+
+side = 3;
+
+%ak su lave/prave rohy zbehnute k sebe, je to horna strana
+if (dist(UL,DL)*3 < edgeLen && dist(UR,DR)*3 < edgeLen)
+   side = 3;
+   return;
+end
+
+dy1 = abs((UL(1)-DL(1)) / (UL(2)-DL(2)));
+dy2 = abs((UR(1)-DR(1)) / (UR(2)-DR(2)));
+
+%ak ma dostatocne vertikalne hrany, bude lava alebo prava
+if (dy1 > 2.5 || dy2 > 2.5)
+    %vyberieme stranu podla smerovania sklonu
+    if (UR(1) > UL(1) && DR(1) > DL(1))
+        side = 1;
+        return;
     end
-    
-    sides(i) = 3;
-    %ak jedna zlozka vyrazne prevazuje druhu
-    if (left > right && right*LR_QUOTIENT < left)
-        sides(i) = 1;
+    if (UR(1) < UL(1) && DR(1) < DL(1))
+        side = 2;
+        return;
     end
-    if (right > left && left*LR_QUOTIENT<right)
-        sides(i) = 2;
-    end
-    
 end
 
 end
+
+
+
+
+function [d] = dist(a, b)
+d = sqrt ((a(1)-b(1))^2 + (a(2)-b(2))^2);
+end
+
