@@ -1,8 +1,5 @@
 %vrati BW obrazok s odseparovanymi, uzavretymi oblastami predstavujucimi
 %stvorceky na kocke.
-%BW = prienik BW verzii jednotlivych farebnych zloziek R,G,B;
-%E = zjednotenie hran jednotlivych zloziek;
-%vysledok je zjednotenie BW a E
 function [BW] = getBWimage(I)
 
     BW_TRESHOLD = .1;
@@ -10,6 +7,9 @@ function [BW] = getBWimage(I)
     
     [xsz ysz ~] = size(I);
 
+    %BW = prienik BW verzii jednotlivych farebnych zloziek R,G,B;
+    %E = zjednotenie hran jednotlivych zloziek;
+    %vysledok je zjednotenie BW a E
     BW = zeros(xsz,ysz);
     E = ones(xsz,ysz);
     

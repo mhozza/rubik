@@ -3,7 +3,7 @@
 %pixelList - pixely labelu
 %boundsList - pixely okraja
 %centroids - necakane centroid labelu
-%colors - identifikovana farba labelu
+%colors - priemerna farba labelu
 function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
 
     FORBIDDEN_BORDER = .1;
@@ -65,8 +65,7 @@ function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
             bounds = bwtraceboundary(BW,[round(prop(i).Extrema(1,2)) round(prop(i).Extrema(1,1))],'N');
             boundsList{end+1} = bounds;
 
-            color = match_color([round(rTot/n) round(gTot/n) round(bTot/n)]);
-            colors = [colors; color(:)'];
+            colors = [colors; [round(rTot/n) round(gTot/n) round(bTot/n)]];
             
         end
 
@@ -74,14 +73,3 @@ function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
 
 end
 
-
-
-
-%     [H,T,R] = hough(rgb2gray(img));
-%     peaks = houghpeaks(H,10);
-%     lines = houghlines(rgb2gray(img),T,R,peaks,'MinLength',10,'FillGap',3);
-%     figure, imshow(rgb2gray(img)), hold on
-%     for i=1:length(lines)
-%         plot([lines(i).point1(1),lines(i).point2(1)],[lines(i).point1(2),lines(i).point2(2)],'Color','red');
-%     end
-%     hold off;
