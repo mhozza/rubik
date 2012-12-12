@@ -7,7 +7,7 @@
 #ifdef _DEBUG
 #pragma comment(lib, "freetype249_D.lib")
 #else
-#pragma comment(lib, "freetype248.lib")
+#pragma comment(lib, "freetype249.lib")
 #endif
 
 using namespace std;
