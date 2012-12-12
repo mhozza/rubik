@@ -1,0 +1,61 @@
+\documentclass[red]{beamer}
+\usetheme{CambridgeUS}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+\setbeamertemplate{items}[triangle] 
+\renewcommand{\footnoterule}{}
+
+\usepackage[utf8]{inputenc}
+\usepackage[slovak]{babel}
+\usepackage[IL2]{fontenc}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\usepackage[none]{hyphenat}
+
+\usepackage{xargs}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{eurosym}
+
+\newcommandx{\nadpis}[3][1=1,2]{\uncover<#1-#2>{\textbf{#3}}}
+\newcommandx{\odrazka}[3][1=1, 2]{\begin{itemize}\item<#1-#2> #3\end{itemize}}
+\newcommandx{\ukazka}[2][1=1,2]{\uncover<#1-#2>{\hspace{1cm}\textit{...ukážka...}}}
+\newcommandx{\nadpisOnly}[3][1=1,2]{\only<#1-#2>{\textbf{#3}}}
+\newcommandx{\odrazkaOnly}[3][1=1, 2]{\only<#1-#2>{\begin{itemize}\item #3\end{itemize}}}
+\newcommandx{\ukazkaOnly}[2][1=1,2]{\only<#1-#2>{\hspace{1cm}\textit{...ukážka...}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\large
+
+\title{Titulka}
+\subtitle{Podtitulka}
+\author{Matej Kopernický}
+\date{Datum}
+
+{
+\setbeamertemplate{background canvas}{\includegraphics[width=\paperwidth,height=\paperheight]{title}}
+\begin{frame}[plain,t]
+\begin{center}
+\color{white}
+\vspace{1.9cm}
+\huge\inserttitle
+\vspace{0.9cm}
+\Large\insertsubtitle\\
+\vspace{1.75cm}
+\color{black}
+\large\insertauthor\\
+\bigskip
+Informatika, 3. ročník
+\end{center}
+\end{frame}
+}
+
+
+
+\end{document}
