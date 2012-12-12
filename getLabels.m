@@ -38,7 +38,6 @@ function [pixelList boundsList centroids colors] = getLabels(Iorig, BW)
         
         %komponent je dobry ak:
         %-nie je na okraji obrazku
-        %-dobre vyplna svoj konvexny obal
         %-nie je prilis splosteny
         %-dostatocne vyplna svoj konvexny obal
         %-nie je prilis deravy

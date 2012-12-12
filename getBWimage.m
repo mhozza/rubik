@@ -24,6 +24,7 @@ function [BW] = getBWimage(I)
         %erodovane hrany zlozky
         tmp = edge(I(:,:,i));
         tmp = imerode(imcomplement(tmp), ones(ERODE_SIZE));
+        %figure, imshow(tmp);
         %zjednotenie hran
         E = min(E,tmp);
     end
