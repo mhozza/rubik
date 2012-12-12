@@ -65,7 +65,7 @@ glm::vec4 vRubikColors[6] =
 	glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), // Blue
 	glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), // Orange
 	glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), // Yellow
-	glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) // White
+	glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) // White
 };
 
 class CRubikSubcube
