@@ -1,21 +1,17 @@
-typedef struct {
-    double r;       // percent
-    double g;       // percent
-    double b;       // percent
-} rgb;
+#include "rgbhsv.h"
+#include <iostream>
 
-typedef struct {
-    double h;       // angle in degrees
-    double s;       // percent
-    double v;       // percent
-} hsv;
+using namespace std;
 
-static hsv      rgb2hsv(rgb in);
-static rgb      hsv2rgb(hsv in);
-
-hsv rgb2hsv(rgb in)
+hsv rgb2hsv(rgbcolor color)
 {
+    rgb in;
+    in.r = color.r/255.0;
+    in.g = color.g/255.0;
+    in.b = color.b/255.0;
+
     hsv         out;
+    out.h = 0;
     double      min, max, delta;
 
     min = in.r < in.g ? in.r : in.g;
@@ -26,12 +22,13 @@ hsv rgb2hsv(rgb in)
 
     out.v = max;                                // v
     delta = max - min;
-    if( max > 0.0 ) {
-        out.s = (delta / max);                  // s
+
+    if( delta > 0.0 ) {
+        out.s = (max / delta);                  // s
     } else {
         // r = g = b = 0                        // s = 0, v is undefined
         out.s = 0.0;
-        out.h = NAN;                            // its now undefined
+        out.h = 0.0;                            // its now undefined
         return out;
     }
     if( in.r >= max )                           // > is bogus, just keeps compilor happy
@@ -113,5 +110,6 @@ rgb hsv2rgb(hsv in)
         out.b = q;
         break;
     }
-    return out;     
+    return out;
 }
+
