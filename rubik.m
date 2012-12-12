@@ -1,4 +1,8 @@
-function rubik(I)
+function rubik(I, labelsOnly)
+
+if nargin==1
+    labelsOnly = 0;
+end
 
 %algoritmus outline:
 %-najdeme BW obrazok s uzavretymi oblastami
@@ -93,6 +97,7 @@ boundsListTmp = {};
 centroidsTmp = [];
 colorsTmp = [];
 
+imgCorners = img;
 
 for i=1:n
     
@@ -102,16 +107,18 @@ for i=1:n
         
         for j=1:length(pixelList{i})
             img(pixelList{i}(j,1),pixelList{i}(j,2),:) = colors(i,:);
+            imgCorners(pixelList{i}(j,1),pixelList{i}(j,2),:) = colors(i,:);
         end
         for j=1:length(boundsList{i})
             img(boundsList{i}(j,1),boundsList{i}(j,2),:) = [255 255 255];
+            imgCorners(boundsList{i}(j,1),boundsList{i}(j,2),:) = [255 255 255];
         end
         
         [side ul dl ur dr] = getLabelSide(boundsList{i}, sqrt(length(pixelList{i})));
-%         img = krizik(img, ul(1),ul(2),[255 0 0]);
-%         img = krizik(img, dl(1),dl(2),[0 255 0]);
-%         img = krizik(img, ur(1),ur(2),[0 0 255]);
-%         img = krizik(img, dr(1),dr(2),[255 255 255]);
+        imgCorners = krizik(imgCorners, ul(1),ul(2),[255 0 0],0);
+        imgCorners = krizik(imgCorners, dl(1),dl(2),[0 255 0],0);
+        imgCorners = krizik(imgCorners, ur(1),ur(2),[255 255 0],0);
+        imgCorners = krizik(imgCorners, dr(1),dr(2),[255 255 255],0);
         
         UL(end+1,:) = ul;
         DL(end+1,:) = dl;
@@ -127,6 +134,13 @@ for i=1:n
     end
 end
 
+figure, imshow(img);
+
+if labelsOnly
+    return;
+end
+
+figure, imshow(imgCorners);
 
 n = length(sides);
 colors = colorsTmp;
@@ -210,13 +224,14 @@ for i=1:n
     end
 end
 
-%priblizny uhol osi L a R strany
+%priblizny "uhol" osi L a R strany
 medAngleXR = median(angleXR);
 medAngleXL = median(angleXL);
 medAngleYR = median(angleYR);
 medAngleYL = median(angleYL);
 
 AXE_LEN = 180;
+%modifikator pre hornu stenu, kompenzuje perspektivu
 AXE_U_PERSP_MODIF = 0.78;
 
 %kreslenie osi
@@ -263,7 +278,6 @@ for i=1:n
             if (i~=j && sides(j)==1)
                 [x y] = polyxpoly([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN], [centroids(i,1)-AXE_LEN*medAngleXL centroids(i,1)+AXE_LEN*medAngleXL],...
                     [centroids(j,2)-AXE_LEN*medAngleYL centroids(j,2)+AXE_LEN*medAngleYL], [centroids(j,1)-AXE_LEN centroids(j,1)+AXE_LEN]);
-%                 img = krizik(img, y, x, [0 0 255]);
                 foundL(end+1,:) = [y x];
             end
         end
@@ -273,7 +287,6 @@ for i=1:n
             if (i~=j && sides(j)==2)
                 [x y] = polyxpoly([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN], [centroids(i,1)-AXE_LEN*medAngleXR centroids(i,1)+AXE_LEN*medAngleXR],...
                     [centroids(j,2)-AXE_LEN*medAngleYR centroids(j,2)+AXE_LEN*medAngleYR], [centroids(j,1)-AXE_LEN centroids(j,1)+AXE_LEN]);
-%                img = krizik(img, y, x, [0 0 255]);
                 foundR(end+1,:) = [y x];
             end
         end
@@ -285,7 +298,6 @@ for i=1:n
                     [centroids(i,1)-AXE_LEN*medAngleXR*AXE_U_PERSP_MODIF centroids(i,1)+AXE_LEN*medAngleXR*AXE_U_PERSP_MODIF],...
                     [centroids(j,2)-AXE_LEN centroids(j,2)+AXE_LEN],...
                     [centroids(j,1)-AXE_LEN*medAngleXL*AXE_U_PERSP_MODIF centroids(j,1)+AXE_LEN*medAngleXL*AXE_U_PERSP_MODIF]);
-%                img = krizik(img, y, x, [0 0 255]);
                 foundU(end+1,:) = [y x];
             end
         end
@@ -383,7 +395,7 @@ if (cntL < 9 && size(foundLfiltered,1) >= 9-cntL)
     [IDX C] = kmeans(foundLfiltered, 9-cntL);
     for i=1:size(C,1)
         centroidsL(end+1,:) = C(i,:);
-        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:));
+        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:),1);
         colorsL(end+1,:) = I(round(C(i,1)),round(C(i,2)),:);
     end
 end
@@ -391,7 +403,7 @@ if (cntR < 9 && size(foundRfiltered,1) >= 9-cntR)
     [IDX C] = kmeans(foundRfiltered, 9-cntR);
     for i=1:size(C,1)
         centroidsR(end+1,:) = C(i,:);
-        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:));
+        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:),1);
         colorsR(end+1,:) = I(round(C(i,1)),round(C(i,2)),:);
     end
 end
@@ -404,7 +416,7 @@ if (cntU < 9 &&  size(foundUfiltered,1) >= 9-cntU)
     [IDX C] = kmeans(foundUfiltered, 9-cntU,'replicates',10);
     for i=1:size(C,1)
         centroidsU(end+1,:) = C(i,:);
-        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:));
+        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:),1);
         colorsU(end+1,:) = I(round(C(i,1)),round(C(i,2)),:);
     end
 end
@@ -412,24 +424,26 @@ end
 figure, imshow(img);
 hold off;
 
+
 %vykreslenie vsetkych centroidov pre kontrolu
-imgC = img;
-imgC(:,:,:) = 0;
-for i=1:size(centroidsL,1)
-    imgC = krizik(imgC, centroidsL(i,1), centroidsL(i,2), colorsL(i,:));
-end
-for i=1:size(centroidsR,1)
-    imgC = krizik(imgC, centroidsR(i,1), centroidsR(i,2), colorsR(i,:));
-end
-for i=1:size(centroidsU,1)
-    imgC = krizik(imgC, centroidsU(i,1), centroidsU(i,2), colorsU(i,:));
-end
-figure, imshow(imgC);
+% imgC = img;
+% imgC(:,:,:) = 0;
+% for i=1:size(centroidsL,1)
+%     imgC = krizik(imgC, centroidsL(i,1), centroidsL(i,2), colorsL(i,:));
+% end
+% for i=1:size(centroidsR,1)
+%     imgC = krizik(imgC, centroidsR(i,1), centroidsR(i,2), colorsR(i,:));
+% end
+% for i=1:size(centroidsU,1)
+%     imgC = krizik(imgC, centroidsU(i,1), centroidsU(i,2), colorsU(i,:));
+% end
+% figure, imshow(imgC);
 
 if (size(centroidsL,1)~=9 || size(centroidsR,1)~=9 || size(centroidsU,1)~=9)
     return;
 end
 
+%posortime stvorceky pre kazdu stenu
 [centroidsLsorted, colorsLsorted] = getLabelOrder(1, centroidsL, colorsL, 0);
 [centroidsRsorted, colorsRsorted] = getLabelOrder(2, centroidsR, colorsR, 0);
 [centroidsUsorted, colorsUsorted] = getLabelOrder(3, centroidsU, colorsU, medAngleXR*AXE_U_PERSP_MODIF);
@@ -452,7 +466,7 @@ for i=1:9
     imgC = step(txtInserter,imgC);
 end
 figure, imshow(imgC);
-
+hold off;
 
 
 end
@@ -461,16 +475,22 @@ end
 
 
 
-function [I] = krizik(Iorig, x, y, col)
-for k=-1:1:1
+function [I] = krizik(Iorig, x, y, col, thick)
+if thick
+    for k=-1:1:1
+        for i=-5:5
+            Iorig(round(x)+i,round(y)+k,:) = col;
+            Iorig(round(x)+k,round(y)+i,:) = col;
+        end
+    end
+else
     for i=-5:5
-        Iorig(round(x)+i,round(y)+k,:) = col;
-        Iorig(round(x)+k,round(y)+i,:) = col;
+        Iorig(round(x)+i,round(y),:) = col;
+        Iorig(round(x),round(y)+i,:) = col;
     end
 end
 I = Iorig;
 end
-
 
 
 
@@ -483,10 +503,5 @@ end
 function [d] = distLinePoint(line, point)
 d = abs(cross(line(2)-line(1),point-line(1)))/abs(line(2)-line(1));
 end
-
-
-
-
-
 
 
