@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.9.28)  13 DEC 2012 00:41
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.9.28)  13 DEC 2012 00:54
 entering extended mode
 **D:/Dropbox/github/rubik/rubik/prezentacia/prezentacia.tex
 (D:/Dropbox/github/rubik/rubik/prezentacia/prezentacia.tex
@@ -1516,26 +1516,25 @@ Package pdftex.def Info: ../images/IMG_2052.JPG used on input line 92.
 ] [15
 
 ]
-<img/zlozkyRGBall.png, id=101, 528.47438pt x 386.19281pt>
-File: img/zlozkyRGBall.png Graphic file (type png)
-
-<use img/zlozkyRGBall.png>
-Package pdftex.def Info: img/zlozkyRGBall.png used on input line 120.
-(pdftex.def)             Requested size: 273.83728pt x 200.10837pt.
- [16
-
- <D:/Dropbox/github/rubik/rubik/prezentacia/img/zlozkyRGBall.png>] [17
-
-]
-<img/hranyRGBall.png, id=113, 606.01407pt x 386.19281pt>
+<img/hranyRGBall.png, id=101, 606.01407pt x 386.19281pt>
 File: img/hranyRGBall.png Graphic file (type png)
 
 <use img/hranyRGBall.png>
-Package pdftex.def Info: img/hranyRGBall.png used on input line 133.
+Package pdftex.def Info: img/hranyRGBall.png used on input line 120.
 (pdftex.def)             Requested size: 273.83728pt x 174.50996pt.
+ [16
+
+ <D:/Dropbox/github/rubik/rubik/prezentacia/img/hranyRGBall.png>] [17
+
+] <img/zlozkyRGBall.png, id=113, 528.47438pt x 386.19281pt>
+File: img/zlozkyRGBall.png Graphic file (type png)
+
+<use img/zlozkyRGBall.png>
+Package pdftex.def Info: img/zlozkyRGBall.png used on input line 133.
+(pdftex.def)             Requested size: 273.83728pt x 200.10837pt.
  [18
 
- <D:/Dropbox/github/rubik/rubik/prezentacia/img/hranyRGBall.png>] [19
+ <D:/Dropbox/github/rubik/rubik/prezentacia/img/zlozkyRGBall.png>] [19
 
 ] <img/BWall.png, id=127, 606.01407pt x 386.19281pt>
 File: img/BWall.png Graphic file (type png)
@@ -1932,7 +1931,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 385.
 Here is how much of TeX's memory you used:
  18958 strings out of 494045
  345173 string characters out of 3150405
- 448446 words of memory out of 3000000
+ 448447 words of memory out of 3000000
  21610 multiletter control sequences out of 15000+200000
  21142 words of font info for 66 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
@@ -1951,7 +1950,7 @@ ers/mako/AppData/Roaming/MiKTeX/2.9/fonts/type1/public/cs/csssi10.pfb><C:/Users
 /mako/AppData/Roaming/MiKTeX/2.9/fonts/type1/public/cs/csssi12.pfb><C:/Programy
 /MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Programy/MiKTeX 
 2.9/fonts/type1/public/amsfonts/symbols/msam7.pfb>
-Output written on prezentacia.pdf (68 pages, 1589554 bytes).
+Output written on prezentacia.pdf (68 pages, 1589574 bytes).
 PDF statistics:
  494 PDF objects out of 1000 (max. 8388607)
  139 named destinations out of 1000 (max. 500000)

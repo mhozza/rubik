@@ -116,19 +116,6 @@
 
 
 \begin{frame}{Hľadanie hrán}
-\centerline{\includegraphics[width=.8\linewidth]{img/zlozkyRGBall}}
-\end{frame}
-
-
-
-\begin{frame}{Hľadanie hrán}
-\odrazka{$E =$ zjednotenie hrán zo všetkých farebných zložiek + erózia}
-\odrazka{$C =$ prienik jednotlivých farebných zložiek + erózia}
-\end{frame}
-
-
-
-\begin{frame}{Hľadanie hrán}
 \centerline{\includegraphics[width=.8\linewidth]{img/hranyRGBall}}
 \end{frame}
 
@@ -137,7 +124,20 @@
 \begin{frame}{Hľadanie hrán}
 \odrazka{$E =$ zjednotenie hrán zo všetkých farebných zložiek + erózia}
 \odrazka{$C =$ prienik jednotlivých farebných zložiek + erózia}
-\odrazka{$C \cup E =$ výsledný hranový obrázok}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\centerline{\includegraphics[width=.8\linewidth]{img/zlozkyRGBall}}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\odrazka{$E =$ zjednotenie hrán zo všetkých farebných zložiek + erózia}
+\odrazka{$C =$ prienik jednotlivých farebných zložiek + erózia}
+\odrazka{$C \cup E$ + erózia $=$ výsledný hranový obrázok}
 \end{frame}
 
 
@@ -292,7 +292,7 @@
 
 
 %%%%%%%% Matchovanie farieb %%%%%%%%%%
-\begin{frame}{Priradenie nájdených farieb na farby Rubikovej kocky}
+\begin{frame}{Priradenie nájdených farieb k farbám Rubikovej kocky}
 \begin{textblock*}{3cm}(8.5cm,3.5cm)
 \uncover<2->{\includegraphics[width=\linewidth]{img/rubik}}
 \end{textblock*}
@@ -339,7 +339,7 @@
 \uncover<2->{\includegraphics[width=\linewidth]{img/lab}}
 \end{textblock*}
 
-\item<1->Zgrupenie farieb podla podobnosti, pre každú stranu zvlášť
+\item<1->Zgrupenie farieb podľa podobnosti, pre každú stranu zvlášť
     \begin{itemize}
     \item<2-> prevod do $Lab$
     \item<3-> euklidovská vzdialenosť na zložkách $a$, $b$\\
@@ -347,7 +347,7 @@
     \item<4-> treshold na vyhodnotenie podobnosti
     \end{itemize}
 \bigskip
-\item<5-> Priradenie farieb ku grupám - nájsť čo najlepšie ohodnotenie farieb tak, aby žiadne 2 grupy nemali tú istú farbu.
+\item<5-> Priradenie farieb ku grupám - nájsť čo najlepšie ohodnotenie farieb tak, aby žiadne 2 grupy nemali tú istú farbu
 \end{itemize}
 \end{frame}
 
