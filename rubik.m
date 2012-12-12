@@ -1,8 +1,8 @@
-function rubik(I, labelsOnly)
+function rubik(I, fileName, labelsOnly)
 
 show_matched_colors = true;
 
-if nargin==1
+if nargin==2
     labelsOnly = 0;
 end
 
@@ -34,45 +34,6 @@ img(:,:,:) = 0;
 
 %pocet labelov
 n = length(pixelList);
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     % pokus s farbami
-%
-%     LAB_DIST = 15;
-%
-%     %drbneme farby do 1 x n x 3 pola, lebo to tak rgb2lab funkcia chce
-%     tmp = zeros(1,n,3);
-%     for i=1:n
-%         tmp(1,i,:) = colors(i,:);
-%     end
-%     lab = RGB2Lab(tmp);
-%     %zoznam podobnych labelov ku kazdemu labelu
-%     similar = {};
-%
-%     for i=1:n
-%         similar{end+1} = [];
-%         for j=1:n
-%             if (i~=j)
-%                 dist = sqrt( (lab(1,i,1)-lab(1,j,1))^2 + (lab(1,i,2)-lab(1,j,2))^2 + (lab(1,i,3)-lab(1,j,3))^2);
-%                 if (dist<LAB_DIST)
-%                    similar{i}(end+1) = j;
-%                 end
-%                 strcat({'LAB distance '},num2str(i),{'-'},num2str(j),{': '},num2str(dist))
-%                 %strcat({'RGB  '},num2str(tmp(1,i,1)),{' '},num2str(tmp(1,i,2)),{' '},num2str(tmp(1,i,3)),{' '},...
-%                 %    num2str(tmp(1,j,1)),{' '},num2str(tmp(1,j,2)),{' '},num2str(tmp(1,j,3)),{' '})
-%
-%             end
-%         end
-%     end
-%
-%     for i=1:n
-%         i
-%        similar{i}
-%     end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %velkosti labelov (poc. pixelov) a najblizsia vzdialenost labelu k inemu
 sizes = 1:n;
@@ -117,10 +78,10 @@ for i=1:n
         end
         
         [side ul dl ur dr] = getLabelSide(boundsList{i}, sqrt(length(pixelList{i})));
-        imgCorners = krizik(imgCorners, ul(1),ul(2),[255 0 0],0);
-        imgCorners = krizik(imgCorners, dl(1),dl(2),[0 255 0],0);
-        imgCorners = krizik(imgCorners, ur(1),ur(2),[255 255 0],0);
-        imgCorners = krizik(imgCorners, dr(1),dr(2),[255 255 255],0);
+        imgCorners = krizik(imgCorners, ul(1),ul(2),[255 0 0],1);
+        imgCorners = krizik(imgCorners, dl(1),dl(2),[0 255 0],1);
+        imgCorners = krizik(imgCorners, ur(1),ur(2),[255 255 0],1);
+        imgCorners = krizik(imgCorners, dr(1),dr(2),[255 255 255],1);
         
         UL(end+1,:) = ul;
         DL(end+1,:) = dl;
@@ -200,10 +161,12 @@ for i=1:n
         text = 'U';
         cntU = cntU + 1;
     end
-    txtInserter = vision.TextInserter(strcat(text),'Color',[0 0 0],'Location',[centroids(i,1)-10, centroids(i,2)-10]);
+    txtInserter = vision.TextInserter(strcat(text),'Color',[0 0 0],...
+        'Location',[centroids(i,1)-7, centroids(i,2)-7],'FontSize',14);
     img = step(txtInserter,img);
 end
 
+figure, imshow(img);
 
 %vsetky sklony hran stvorcekov
 angleXL = [];
@@ -239,10 +202,14 @@ AXE_U_PERSP_MODIF = 0.78;
 %kreslenie osi
 figure, imshow(img), hold on;
 for i=1:n
-    line([medXL-200 medXL+200], [medYL-200*medAngleXL medYL+200*medAngleXL], 'Color', 'Red');
-    line([medXL-200*medAngleYL medXL+200*medAngleYL], [medYL-200 medYL+200], 'Color', 'Red');
-    line([medXR-200 medXR+200], [medYR-200*medAngleXR medYR+200*medAngleXR], 'Color', 'Blue');
-    line([medXR-200*medAngleYR medXR+200*medAngleYR], [medYR-200 medYR+200], 'Color', 'Blue');
+    line([medXL-200 medXL+200], [medYL-200*medAngleXL medYL+200*medAngleXL],...
+        'Color','Red', 'LineWidth',2);
+    line([medXL-200*medAngleYL medXL+200*medAngleYL], [medYL-200 medYL+200],...
+        'Color','Red', 'LineWidth',2);
+    line([medXR-200 medXR+200], [medYR-200*medAngleXR medYR+200*medAngleXR],...
+        'Color','Yellow', 'LineWidth',2);
+    line([medXR-200*medAngleYR medXR+200*medAngleYR], [medYR-200 medYR+200],...
+        'Color','Yellow', 'LineWidth',2);
 end
 
 %kreslenie mriezky
@@ -394,7 +361,7 @@ end
 
 %pomocou k-means pozhlukujeme a ziskame chybajuce
 if (cntL < 9 && size(foundLfiltered,1) >= 9-cntL)
-    [IDX C] = kmeans(foundLfiltered, 9-cntL);
+    [IDX C] = kmeans(foundLfiltered, 9-cntL,'replicates',10);
     for i=1:size(C,1)
         centroidsL(end+1,:) = C(i,:);
         img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:),1);
@@ -402,7 +369,7 @@ if (cntL < 9 && size(foundLfiltered,1) >= 9-cntL)
     end
 end
 if (cntR < 9 && size(foundRfiltered,1) >= 9-cntR)
-    [IDX C] = kmeans(foundRfiltered, 9-cntR);
+    [IDX C] = kmeans(foundRfiltered, 9-cntR,'replicates',10);
     for i=1:size(C,1)
         centroidsR(end+1,:) = C(i,:);
         img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:),1);
@@ -460,31 +427,31 @@ end
 
 for i=1:9
     txtInserter = vision.TextInserter(strcat('L',num2str(i)),'Color',colorsLsorted(i,:),...
-        'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10]);
+        'Location',[centroidsLsorted(i,1)-7, centroidsLsorted(i,2)-7], 'FontSize',14);
     imgC = step(txtInserter,imgC);
     if(show_matched_colors)
         txtInserter2 = vision.TextInserter(strcat('L',num2str(i)),'Color',match_color(colorsLsorted(i,:)),...
-            'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10]);
+            'Location',[centroidsLsorted(i,1)-7, centroidsLsorted(i,2)-7], 'FontSize',14);
         imgC2 = step(txtInserter2,imgC2);
     end
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('R',num2str(i)),'Color',colorsRsorted(i,:),...
-        'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10]);
+        'Location',[centroidsRsorted(i,1)-7, centroidsRsorted(i,2)-7], 'FontSize',14);
     imgC = step(txtInserter,imgC);
     if(show_matched_colors)
         txtInserter2 = vision.TextInserter(strcat('R',num2str(i)),'Color',match_color(colorsRsorted(i,:)),...
-            'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10]);
+            'Location',[centroidsRsorted(i,1)-7, centroidsRsorted(i,2)-7], 'FontSize',14);
         imgC2 = step(txtInserter2,imgC2);
     end
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('U',num2str(i)),'Color',colorsUsorted(i,:),...
-        'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10]);
+        'Location',[centroidsUsorted(i,1)-7, centroidsUsorted(i,2)-7], 'FontSize',14);
     imgC = step(txtInserter,imgC);
     if(show_matched_colors)
         txtInserter2 = vision.TextInserter(strcat('U',num2str(i)),'Color',match_color(colorsUsorted(i,:)),...
-            'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10]);
+            'Location',[centroidsUsorted(i,1)-7, centroidsUsorted(i,2)-7], 'FontSize',14);
         imgC2 = step(txtInserter2,imgC2);
     end
 end
@@ -493,6 +460,14 @@ if(show_matched_colors)
     figure, imshow(imgC2);
 end
 hold off;
+
+
+%ulozenie farieb na subor
+dlmwrite(strcat(fileName,'.txt'),...
+[[colorsLsorted(1,:) colorsLsorted(2,:) colorsLsorted(3,:); colorsLsorted(4,:) colorsLsorted(5,:) colorsLsorted(6,:); colorsLsorted(7,:) colorsLsorted(8,:) colorsLsorted(9,:)];
+[colorsRsorted(1,:) colorsRsorted(2,:) colorsRsorted(3,:); colorsRsorted(4,:) colorsRsorted(5,:) colorsRsorted(6,:); colorsRsorted(7,:) colorsRsorted(8,:) colorsRsorted(9,:)];
+[colorsUsorted(3,:) colorsRsorted(6,:) colorsRsorted(9,:); colorsRsorted(2,:) colorsRsorted(5,:) colorsRsorted(8,:); colorsRsorted(1,:) colorsRsorted(4,:) colorsRsorted(7,:)]]...
+,' ');
 
 end
 
@@ -528,4 +503,3 @@ end
 function [d] = distLinePoint(line, point)
 d = abs(cross(line(2)-line(1),point-line(1)))/abs(line(2)-line(1));
 end
-

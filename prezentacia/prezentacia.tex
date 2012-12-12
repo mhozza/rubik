@@ -1,0 +1,294 @@
+\documentclass[red]{beamer}
+\usetheme{CambridgeUS}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+\setbeamertemplate{items}[triangle] 
+\renewcommand{\footnoterule}{}
+
+\usepackage[utf8]{inputenc}
+\usepackage[slovak]{babel}
+\usepackage[IL2]{fontenc}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\usepackage[none]{hyphenat}
+
+\usepackage{textcomp}
+\usepackage{xargs}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{eurosym}
+
+\newcommand{\TODO}{{\color{red}!!!!!!!!!!!!!!!!!!!!!!!!}}
+\newcommand{\vlnovka}{\raise.35ex\hbox{$\scriptstyle\mathtt{\sim}$}}
+
+\newcommandx{\nadpis}[3][1=1,2]{\uncover<#1-#2>{\textbf{#3}}}
+\newcommandx{\odrazka}[3][1=1, 2]{\begin{itemize}\item<#1-#2> #3\end{itemize}}
+\newcommandx{\ukazka}[2][1=1,2]{\uncover<#1-#2>{\hspace{1cm}\textit{...demonstration...}}}
+\newcommandx{\nadpisOnly}[3][1=1,2]{\only<#1-#2>{\textbf{#3}}}
+\newcommandx{\odrazkaOnly}[3][1=1, 2]{\only<#1-#2>{\begin{itemize}\item #3\end{itemize}}}
+\newcommandx{\ukazkaOnly}[2][1=1,2]{\only<#1-#2>{\hspace{1cm}\textit{...demonstration...}}}
+
+\begin{document}
+
+\large
+
+\title{Počítačové videnie}
+\subtitle{Rekonštrukcia Rubikovej kocky}
+\author{Michal Bubnár, Michal Hozza, Matej Kopernický}
+\date{13.12.2012}
+
+{
+\setbeamertemplate{background canvas}{\includegraphics[width=\paperwidth,height=\paperheight]{title}}
+\begin{frame}[plain,t]
+\begin{center}
+\color{white}
+\vspace{2.3cm}
+\huge\inserttitle\\
+\vspace{1.2cm}
+\Large\insertsubtitle\\
+\vspace{1.5cm}
+\color{black}
+\large\insertauthor\\
+\bigskip
+\url{https://github.com/mhozza/rubik}
+\end{center}
+\end{frame}
+}
+
+
+
+\begin{frame}{Zadanie}
+\odrazka[1]{Zrekonštruovať Rubikovu kocku z fotografie}
+\medskip
+\odrazka[2]{Získať 3D model kocky s farbami každého políčka na každej stene kocky}
+\medskip
+\uncover<1->{\centerline{\includegraphics[width=.5\linewidth]{img/cube}}}
+\end{frame}
+
+
+
+\begin{frame}{Postup práce}
+\odrazka[1]{Identifikovať pozíciu kocky na obrázku}
+\pause
+\odrazka[2]{Identifikovať pozíciu políčok na kocke}
+\pause
+\odrazka{Priradiť políčka k stene kocky a správne ich zoradiť}
+\pause
+\odrazka{Nájsť farbu každého políčka}
+\pause
+\odrazka{Vizualizovať výsledok}
+%\centerline{\includegraphics[width=.8\linewidth]{depth_map_photo}}
+\end{frame}
+
+
+
+\begin{frame}{Postup práce}
+\centerline{\includegraphics[width=.8\linewidth]{../images/IMG_2052.JPG}}
+\end{frame}
+
+
+
+\begin{frame}{Identifikácia kocky}
+\odrazka{Hľadáme význačné charakteristiky kocky}
+\bigskip
+\pause
+\odrazka{Prvý pokus -- nájsť čiary medzi políčkami pomocu Houghovej transformácie}
+\pause
+\odrazka{Bez úspechu}
+\pause
+\bigskip
+\odrazka{Hľadanie políčok}
+\pause
+\odrazka{Nájdeme uzavreté oblasti na binárnom obrázku}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\odrazka{$E =$ zjednotenie hrán zo všetkých farebných zložiek + erózia}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\centerline{\includegraphics[width=.8\linewidth]{img/zlozkyRGBall}}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\odrazka{$E =$ zjednotenie hrán zo všetkých farebných zložiek + erózia}
+\odrazka{$C =$ prienik jednotlivých farebných zložiek + erózia}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\centerline{\includegraphics[width=.8\linewidth]{img/hranyRGBall}}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\odrazka{$E =$ zjednotenie hrán zo všetkých farebných zložiek + erózia}
+\odrazka{$C =$ prienik jednotlivých farebných zložiek + erózia}
+\odrazka{$C \cup E =$ výsledný hranový obrázok}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie hrán}
+\centerline{\includegraphics[width=.8\linewidth]{img/BWall}}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie políčok}
+\odrazka{Chceme vyseparovať uzavreté oblasti}
+\pause
+\begin{itemize}
+\item Použité množstvo kritérií
+\begin{enumerate}[-]
+\pause
+\item Veľkosť oblasti
+\pause
+\item Pozícia oblasti na obrázku
+\pause
+\item Solidita oblasti
+\pause
+\item Pomer hlavnej a vedľajšej osi opísanej elipsy
+\pause
+\item Eulerovo číslo oblasti
+\end{enumerate}
+\end{itemize}
+
+\pause
+\begin{itemize}
+\item Vylúčenie outlierov
+\begin{enumerate}[-]
+\pause
+\item Vzdialenosť od najväčšieho zhluku
+\pause
+\item Vzájomné porovnanie veľkosti oblastí
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Hľadanie políčok}
+\centerline{\includegraphics[width=\linewidth]{img/labels}}
+\end{frame}
+
+
+
+\begin{frame}{Zaradenie políčok}
+\odrazka{Políčka chceme priradiť ku stene kocky a zoradiť ich v rámci steny}
+\pause
+\begin{itemize}
+\item Nájdeme rohy políčok (ľavý horný/dolný, pravý horný/dolný)
+\begin{enumerate}[-]
+\pause
+\item Line sweeping metóda s čiarami pod 45\textdegree uhlom
+\pause
+\item Optimalizázia počítaním skóre pre každý pixel obvodu
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Zaradenie políčok}
+\centerline{\includegraphics[width=\linewidth]{img/rohy}}
+\end{frame}
+
+
+
+\begin{frame}{Zaradenie políčok}
+\odrazka{Políčka chceme priradiť ku stene kocky a zoradiť ich v rámci steny}
+\begin{itemize}
+\item Nájdeme rohy políčok (ľavý horný/dolný, pravý horný/dolný)
+\begin{enumerate}[-]
+\item Line sweeping metóda s čiarami pod 45\textdegree uhlom
+\item Optimalizázia počítaním skóre pre každý pixel obvodu
+\end{enumerate}
+\end{itemize}
+\odrazka{Zo vzájomnej pozície rohov vieme získať sklony hrán políčok}
+\pause
+\odrazka{Kritérium pre priradenie k stene kocky}
+\pause
+\odrazka{Eliminácia zle zaradených políčok na základe vzájomnej polohy}
+\end{frame}
+
+
+
+\begin{frame}{Zaradenie políčok}
+\centerline{\includegraphics[width=\linewidth]{img/strany}}
+\end{frame}
+
+
+
+\begin{frame}{Chýbajúce políčka}
+\odrazka{Nájdeme osi bočných strán kocky z hrán políčok}
+\end{frame}
+
+
+
+\begin{frame}{Chýbajúce políčka}
+\centerline{\includegraphics[width=\linewidth]{img/osi}}
+\end{frame}
+
+
+
+\begin{frame}{Chýbajúce políčka}
+\odrazka{Nájdeme osi bočných strán kocky z hrán políčok}
+\odrazka{Cez centroidy políčok vedieme osi a získame mriežku}
+\pause
+\odrazka{Pre hornú stenu použijeme osi bočných s kompenzáciou perspektívy}
+\end{frame}
+
+
+
+\begin{frame}{Chýbajúce políčka}
+\centerline{\includegraphics[width=\linewidth]{img/mriezka}}
+\end{frame}
+
+
+
+\begin{frame}{Chýbajúce políčka}
+\odrazka{Priesečníky vedených osí sa stretnú v centroidoch políčok}
+\pause
+\odrazka{Priesečníky príliš vzdialené od známych políčok predstavujú chýbajúce}
+\pause
+\odrazka{Nájdeme zhluky pomocou k-means}
+\end{frame}
+
+
+
+\begin{frame}{Chýbajúce políčka}
+\centerline{\includegraphics[width=\linewidth]{img/chybajuce}}
+\end{frame}
+
+
+
+\begin{frame}{Zoradenie políčok}
+\odrazka{Pre vizualizáciu potrebujeme poznať aj poradie políčok v rámci steny}
+\pause
+\odrazka{Line sweeping pod uhlom osí pre získanie stĺpcov}
+\pause
+\odrazka{Políčka v stĺpci zoradíme podľa súradníc}
+\end{frame}
+
+
+
+\begin{frame}{Zoradenie políčok}
+\centerline{\includegraphics[width=\linewidth]{img/zoradene}}
+\end{frame}
+
+
+
+
+
+\end{document}
