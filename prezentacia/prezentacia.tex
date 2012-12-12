@@ -11,6 +11,8 @@
 \usepackage[protrusion=true,expansion=true]{microtype}
 \usepackage[none]{hyphenat}
 
+\usepackage{hyperref}
+\urlstyle{same}
 \usepackage{textcomp}
 \usepackage{xargs}
 \usepackage{graphicx}
@@ -286,6 +288,95 @@
 \begin{frame}{Zoradenie políčok}
 \centerline{\includegraphics[width=\linewidth]{img/zoradene}}
 \end{frame}
+
+
+
+%%%%%%%% Matchovanie farieb %%%%%%%%%%
+\begin{frame}{Priradenie nájdených farieb na farby Rubikovej kocky}
+\begin{textblock*}{3cm}(8.5cm,3.5cm)
+\uncover<2->{\includegraphics[width=\linewidth]{img/rubik}}
+\end{textblock*}
+\odrazka[1]{Chceme nájdené farby priradiť k farbám originálnej Rubikovej kocky}
+\begin{itemize}
+\item<2->{Rubikova kocka má 6 základných farieb}
+    \begin{itemize}
+    \item<2-> Red: $(196, 30, 58)$
+    \item<2-> Green: $(0, 158, 96)$
+    \item<2-> Blue: $(0, 81, 186)$
+    \item<2-> Orange: $(255, 88, 0)$
+    \item<2-> Yellow: $(255, 213, 0)$
+    \item<2-> White: $(255, 255, 255)$
+    \end{itemize}
+\end{itemize}
+\odrazka[3] {Jednoduchý algoritmus matchovania farby k farbe}
+\odrazka[4] {Zložitejší algoritmus zgrupovania a matchovania skupiny k farbe}
+\end{frame}
+
+
+
+%%%%%%%% Matchovanie farby na farbu %%%%%%%%%%
+\begin{frame}{Matchovanie jednej farby na farbu Rubikovej kocky}
+\begin{itemize}
+\begin{textblock*}{4.5cm}(8.0cm,5.5cm)
+\uncover<2->{\includegraphics[width=\linewidth]{img/hsv}}
+\end{textblock*}
+%\item<1->Funkcia {\tt match\_color}:
+\item<1->Prevod oboch farieb do HSV
+\item<2->Spočítanie skóre pre všetky farby a následný výber farby s najväčším skóre
+    \begin{itemize}
+    \item<3-> rozdiel 2 farieb po zložkách   
+    \item<4-> výsledné skóre je váhovaný súčet zložiek
+    \item<5-> pre každú cieľovú farbu sú rôzne váhy
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+%%%%%%%% Zgrupovanie podobných farieb %%%%%%%%%%
+\begin{frame}{Zgrupovanie podobných farieb}
+\begin{itemize}
+
+\begin{textblock*}{2.3cm}(9.3cm,3.6cm)
+\uncover<2->{\includegraphics[width=\linewidth]{img/lab}}
+\end{textblock*}
+
+\item<1->Zgrupenie farieb podla podobnosti, pre každú stranu zvlášť
+    \begin{itemize}
+    \item<2-> prevod do $Lab$
+    \item<3-> euklidovská vzdialenosť na zložkách $a$, $b$\\
+    $ d = \sqrt{(a_1-a_2)^2+(b_1-b_2)^2} $
+    \item<4-> treshold na vyhodnotenie podobnosti
+    \end{itemize}
+\bigskip
+\item<5-> Priradenie farieb ku grupám - nájsť čo najlepšie ohodnotenie farieb tak, aby žiadne 2 grupy nemali tú istú farbu.
+\end{itemize}
+\end{frame}
+
+
+
+
+\newcommand{\bibnet}[3]{#1: \textit{#2} [online]. \scriptsize$<$\mbox{\url{#3}}$>$\normalsize.}
+\newcommand{\bibnetEllipsis}[4]{#1: \textit{#2} [online]. \scriptsize$<$\href{#3}{#4}$>$\normalsize.}
+
+\begin{frame}{Literatúra}
+\bibliographystyle{abbrv}
+\begin{raggedright}
+\begin{thebibliography}{9}
+\bibitem{b1}
+  \bibnetEllipsis{Justin Ng}{Automated Rubik's Cube Recognition}
+  {http://www.stanford.edu/class/ee368/Project_12/Reports/Ng_Rubiks\%20Cube_Reconstruction_from_Images.pdf}
+  {http://www.stanford.edu/class/ee368/Project\_12/Reports/...}
+\bibitem{b2}
+  \bibnet{Andrej Karpathy}{Extracting sticker colors on Rubik’s Cube}
+  {http://karpathy.ca/portfolio/project525.php}
+\bibitem{b3}
+  W\l odzimierz Kasprzak, Wojciech Szynkiewicz, \L ukasz Czajka: \textit{Rubik's cube reconstruction from single view for Service robots}, Machine Graphics \& Vision International Journal archive, Volume 15 Issue 3, February 2006, Pages 451-459
+\bibitem{b2}
+  \bibnet{Yoann Bourse}{Controle 3D par un Rubik's Cube}{http://www.yoannbourse.com/ressources/docs/ens/stereovision.pdf}
+\end{thebibliography}
+\end{raggedright}
+\end{frame}
+
+
 
 
 
