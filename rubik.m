@@ -1,6 +1,6 @@
-function rubik(I, labelsOnly)
+function rubik(I, fileName, labelsOnly)
 
-if nargin==1
+if nargin==2
     labelsOnly = 0;
 end
 
@@ -115,10 +115,10 @@ for i=1:n
         end
         
         [side ul dl ur dr] = getLabelSide(boundsList{i}, sqrt(length(pixelList{i})));
-        imgCorners = krizik(imgCorners, ul(1),ul(2),[255 0 0],0);
-        imgCorners = krizik(imgCorners, dl(1),dl(2),[0 255 0],0);
-        imgCorners = krizik(imgCorners, ur(1),ur(2),[255 255 0],0);
-        imgCorners = krizik(imgCorners, dr(1),dr(2),[255 255 255],0);
+        imgCorners = krizik(imgCorners, ul(1),ul(2),[255 0 0],1);
+        imgCorners = krizik(imgCorners, dl(1),dl(2),[0 255 0],1);
+        imgCorners = krizik(imgCorners, ur(1),ur(2),[255 255 0],1);
+        imgCorners = krizik(imgCorners, dr(1),dr(2),[255 255 255],1);
         
         UL(end+1,:) = ul;
         DL(end+1,:) = dl;
@@ -198,10 +198,12 @@ for i=1:n
         text = 'U';
         cntU = cntU + 1;
     end
-    txtInserter = vision.TextInserter(strcat(text),'Color',[0 0 0],'Location',[centroids(i,1)-10, centroids(i,2)-10]);
+    txtInserter = vision.TextInserter(strcat(text),'Color',[0 0 0],...
+        'Location',[centroids(i,1)-7, centroids(i,2)-7],'FontSize',14);
     img = step(txtInserter,img);
 end
 
+figure, imshow(img);
 
 %vsetky sklony hran stvorcekov
 angleXL = [];
@@ -237,10 +239,10 @@ AXE_U_PERSP_MODIF = 0.78;
 %kreslenie osi
 figure, imshow(img), hold on;
 for i=1:n
-    line([medXL-200 medXL+200], [medYL-200*medAngleXL medYL+200*medAngleXL], 'Color', 'Red');
-    line([medXL-200*medAngleYL medXL+200*medAngleYL], [medYL-200 medYL+200], 'Color', 'Red');
-    line([medXR-200 medXR+200], [medYR-200*medAngleXR medYR+200*medAngleXR], 'Color', 'Blue');
-    line([medXR-200*medAngleYR medXR+200*medAngleYR], [medYR-200 medYR+200], 'Color', 'Blue');
+    line([medXL-200 medXL+200], [medYL-200*medAngleXL medYL+200*medAngleXL], 'Color', 'Red','LineWidth',2);
+    line([medXL-200*medAngleYL medXL+200*medAngleYL], [medYL-200 medYL+200], 'Color', 'Red','LineWidth',2);
+    line([medXR-200 medXR+200], [medYR-200*medAngleXR medYR+200*medAngleXR], 'Color', 'Yellow','LineWidth',2);
+    line([medXR-200*medAngleYR medXR+200*medAngleYR], [medYR-200 medYR+200], 'Color', 'Yellow','LineWidth',2);
 end
 
 %kreslenie mriezky
@@ -392,7 +394,7 @@ end
 
 %pomocou k-means pozhlukujeme a ziskame chybajuce
 if (cntL < 9 && size(foundLfiltered,1) >= 9-cntL)
-    [IDX C] = kmeans(foundLfiltered, 9-cntL);
+    [IDX C] = kmeans(foundLfiltered, 9-cntL,'replicates',10);
     for i=1:size(C,1)
         centroidsL(end+1,:) = C(i,:);
         img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:),1);
@@ -400,7 +402,7 @@ if (cntL < 9 && size(foundLfiltered,1) >= 9-cntL)
     end
 end
 if (cntR < 9 && size(foundRfiltered,1) >= 9-cntR)
-    [IDX C] = kmeans(foundRfiltered, 9-cntR);
+    [IDX C] = kmeans(foundRfiltered, 9-cntR,'replicates',10);
     for i=1:size(C,1)
         centroidsR(end+1,:) = C(i,:);
         img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:),1);
@@ -452,21 +454,28 @@ imgC = img;
 imgC(:,:,:) = 0;
 for i=1:9
     txtInserter = vision.TextInserter(strcat('L',num2str(i)),'Color',colorsLsorted(i,:),...
-        'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10]);
+        'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10], 'FontSize',15);
     imgC = step(txtInserter,imgC);
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('R',num2str(i)),'Color',colorsRsorted(i,:),...
-        'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10]);
+        'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10], 'FontSize',15);
     imgC = step(txtInserter,imgC);
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('U',num2str(i)),'Color',colorsUsorted(i,:),...
-        'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10]);
+        'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10], 'FontSize',15);
     imgC = step(txtInserter,imgC);
 end
 figure, imshow(imgC);
 hold off;
+
+%ulozenie farieb na subor
+dlmwrite(strcat(fileName,'.txt'),...
+[[colorsLsorted(1,:) colorsLsorted(2,:) colorsLsorted(3,:); colorsLsorted(4,:) colorsLsorted(5,:) colorsLsorted(6,:); colorsLsorted(7,:) colorsLsorted(8,:) colorsLsorted(9,:)];
+[colorsRsorted(1,:) colorsRsorted(2,:) colorsRsorted(3,:); colorsRsorted(4,:) colorsRsorted(5,:) colorsRsorted(6,:); colorsRsorted(7,:) colorsRsorted(8,:) colorsRsorted(9,:)];
+[colorsUsorted(3,:) colorsRsorted(6,:) colorsRsorted(9,:); colorsRsorted(2,:) colorsRsorted(5,:) colorsRsorted(8,:); colorsRsorted(1,:) colorsRsorted(4,:) colorsRsorted(7,:)]]...
+,' ');
 
 
 end

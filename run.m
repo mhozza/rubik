@@ -30,12 +30,12 @@ if (~strcmp(path,''))
     for i=1:length(files)
         [~, ~, ext] = fileparts(files(i).name);
         if (strcmp(ext,'.JPG') || strcmp(ext,'.jpg'))
-            rubik(imread(strcat(path,files(i).name)), labelsOnly);
+            rubik(imread(strcat(path,files(i).name)), strcat(path,files(i).name), labelsOnly);
         end
     end
     
 else
-    rubik(imread(strcat('./images/',which)), labelsOnly);
+    rubik(imread(strcat('./images/',which)), strcat('./images/',which), labelsOnly);
 end
 
 end
