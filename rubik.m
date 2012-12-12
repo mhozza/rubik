@@ -527,4 +527,3 @@ function [d] = distLinePoint(line, point)
 d = abs(cross(line(2)-line(1),point-line(1)))/abs(line(2)-line(1));
 end
 
-
