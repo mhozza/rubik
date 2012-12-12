@@ -1,2 +1,9 @@
 *~
 *.asv
+*.aux
+*.snm
+*.log
+*.dvi
+*.toc
+*.nav
+*.out

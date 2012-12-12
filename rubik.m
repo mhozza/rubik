@@ -1,6 +1,7 @@
 function rubik(I, fileName, labelsOnly)
 
 if nargin==2
+    show_matched_colors = true;
     labelsOnly = 0;
 end
 
@@ -452,24 +453,49 @@ end
 
 imgC = img;
 imgC(:,:,:) = 0;
+
+if(show_matched_colors)
+    imgC2 = img;
+    imgC2(:,:,:) = 0;
+end
+
 for i=1:9
     txtInserter = vision.TextInserter(strcat('L',num2str(i)),'Color',colorsLsorted(i,:),...
         'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10], 'FontSize',15);
     imgC = step(txtInserter,imgC);
+    if(show_matched_colors)
+        txtInserter2 = vision.TextInserter(strcat('L',num2str(i)),'Color',match_color(colorsLsorted(i,:)),...
+            'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10]);
+        imgC2 = step(txtInserter2,imgC2);
+    end
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('R',num2str(i)),'Color',colorsRsorted(i,:),...
         'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10], 'FontSize',15);
     imgC = step(txtInserter,imgC);
+    if(show_matched_colors)
+        txtInserter2 = vision.TextInserter(strcat('R',num2str(i)),'Color',match_color(colorsRsorted(i,:)),...
+            'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10]);
+        imgC2 = step(txtInserter2,imgC2);
+    end
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('U',num2str(i)),'Color',colorsUsorted(i,:),...
         'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10], 'FontSize',15);
     imgC = step(txtInserter,imgC);
+    if(show_matched_colors)
+        txtInserter2 = vision.TextInserter(strcat('U',num2str(i)),'Color',match_color(colorsUsorted(i,:)),...
+            'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10]);
+        imgC2 = step(txtInserter2,imgC2);
+    end
 end
 figure, imshow(imgC);
+if(show_matched_colors)
+    figure, imshow(imgC2);
+end
 hold off;
 
+<<<<<<< HEAD
 %ulozenie farieb na subor
 dlmwrite(strcat(fileName,'.txt'),...
 [[colorsLsorted(1,:) colorsLsorted(2,:) colorsLsorted(3,:); colorsLsorted(4,:) colorsLsorted(5,:) colorsLsorted(6,:); colorsLsorted(7,:) colorsLsorted(8,:) colorsLsorted(9,:)];
@@ -512,5 +538,4 @@ end
 function [d] = distLinePoint(line, point)
 d = abs(cross(line(2)-line(1),point-line(1)))/abs(line(2)-line(1));
 end
-
 

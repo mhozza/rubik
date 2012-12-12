@@ -28,13 +28,13 @@ function [matched_color] = match_color(color)
 	end
 
 	function score = universal_score(dh, ds, dv, wh, ws, wv)
-		score = dh*wh+ds*ws+dv*wv;
+		score = sqrt((dh^2*wh)+ds^2*ws+dv^2*wv);
 	end
 
 	function score = score_red(h,s,v)
 		[oh os ov] = rgb2hsv(RED);
 		[dh ds dv] = diff(h, s, v, oh, os, ov);
-		score = universal_score(dh, ds, dv, 3/12, 3/12, 6/12);
+		score = universal_score(dh, ds, dv, 4/12, 3/12, 5/12);
 	end
 
 	function score = score_green(h,s,v)
@@ -52,7 +52,7 @@ function [matched_color] = match_color(color)
 	function score = score_orange(h,s,v)
 		[oh os ov] = rgb2hsv(ORANGE);
 		[dh ds dv] = diff(h, s, v, oh, os, ov);
-		score = universal_score(dh, ds, dv, 5/12, 3/12,4/12);
+		score = universal_score(dh, ds, dv, 4/12, 3/12,5/12);
 	end
 
 	function score = score_yellow(h,s,v)
