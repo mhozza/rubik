@@ -1,5 +1,7 @@
 function rubik(I, labelsOnly)
 
+show_matched_colors = true;
+
 if nargin==1
     labelsOnly = 0;
 end
@@ -451,8 +453,6 @@ end
 imgC = img;
 imgC(:,:,:) = 0;
 
-show_matched_colors = true;
-
 if(show_matched_colors)
     imgC2 = img;
     imgC2(:,:,:) = 0;
@@ -489,7 +489,9 @@ for i=1:9
     end
 end
 figure, imshow(imgC);
-figure, imshow(imgC2);
+if(show_matched_colors)
+    figure, imshow(imgC2);
+end
 hold off;
 
 end
