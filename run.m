@@ -7,13 +7,11 @@ function run(which, labelsOnly)
 if nargin==1
    labelsOnly = 0; 
 end
-    
 
 %kvoli kompatibilite s matlabom 2011a - dufam ze to nebude robit problemy.
 %vision.setCoordinateSystem('RC');
 
 path = '';
-
 if (strcmp(which,'all'))
     path = './images/';
 end
@@ -23,7 +21,6 @@ end
 if (strcmp(which,'pair'))
     path = './images/pair/';
 end
-
 
 if (~strcmp(path,''))
     files = dir(path);
