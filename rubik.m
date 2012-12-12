@@ -450,24 +450,47 @@ end
 
 imgC = img;
 imgC(:,:,:) = 0;
+
+show_matched_colors = true;
+
+if(show_matched_colors)
+    imgC2 = img;
+    imgC2(:,:,:) = 0;
+end
+
 for i=1:9
     txtInserter = vision.TextInserter(strcat('L',num2str(i)),'Color',colorsLsorted(i,:),...
         'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10]);
     imgC = step(txtInserter,imgC);
+    if(show_matched_colors)
+        txtInserter2 = vision.TextInserter(strcat('L',num2str(i)),'Color',match_color(colorsLsorted(i,:)),...
+            'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10]);
+        imgC2 = step(txtInserter2,imgC2);
+    end
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('R',num2str(i)),'Color',colorsRsorted(i,:),...
         'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10]);
     imgC = step(txtInserter,imgC);
+    if(show_matched_colors)
+        txtInserter2 = vision.TextInserter(strcat('R',num2str(i)),'Color',match_color(colorsRsorted(i,:)),...
+            'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10]);
+        imgC2 = step(txtInserter2,imgC2);
+    end
 end
 for i=1:9
     txtInserter = vision.TextInserter(strcat('U',num2str(i)),'Color',colorsUsorted(i,:),...
         'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10]);
     imgC = step(txtInserter,imgC);
+    if(show_matched_colors)
+        txtInserter2 = vision.TextInserter(strcat('U',num2str(i)),'Color',match_color(colorsUsorted(i,:)),...
+            'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10]);
+        imgC2 = step(txtInserter2,imgC2);
+    end
 end
 figure, imshow(imgC);
+figure, imshow(imgC2);
 hold off;
-
 
 end
 
