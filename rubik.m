@@ -1,6 +1,6 @@
 function rubik(I)
 
-%algoritmus outline
+%algoritmus outline:
 %-najdeme BW obrazok s uzavretymi oblastami
 %-zistime, ktore oblasti su dobre
 %-dodatocne vyhodime zle oblasti na zaklade ich vzajomnych vztahov
@@ -8,13 +8,16 @@ function rubik(I)
 %-najdeme osi stran kocky
 %-natiahneme osi cez centroidy stvorcekov a ziskame mriezku, ktora bude
 %prechadzat aj chybajucimi stvorcekami
-%-prejdeme najdene priesecniky osi a ziskame chybajuce stvorceky
-%-zistime, v akom poradi maju ist
+%-prejdeme najdene priesecniky osi a byberieme z nich tie, ktore su daleko
+%od najdenych stvorcekov
+%-z takychto priesecnikov vytrieskame pomocou k-means centroidy chybajucich
+%stvorcekov
+%-zistime, v akom poradi maju stvorecky v ramci strany kocky ist
 
 figure, imshow(I);
 
 BW = getBWimage(I);
-%figure, imshow(BW);
+figure, imshow(BW);
 
 [pixelList boundsList centroids colors] = getLabels(I, BW);
 
@@ -213,25 +216,36 @@ medAngleXL = median(angleXL);
 medAngleYR = median(angleYR);
 medAngleYL = median(angleYL);
 
+AXE_LEN = 180;
+AXE_U_PERSP_MODIF = 0.78;
+
 %kreslenie osi
-% for i=1:n
-%     if (sides(i)==1)
-%         line([centroids(i,2)-200 centroids(i,2)+200], [centroids(i,1)-200*medAngleXL centroids(i,1)+200*medAngleXL]);
-%         line([centroids(i,2)-200*medAngleYL centroids(i,2)+200*medAngleYL], [centroids(i,1)-200 centroids(i,1)+200]);
-%     end
-%     if (sides(i)==2)
-%         line([centroids(i,2)-200 centroids(i,2)+200], [centroids(i,1)-200*medAngleXR centroids(i,1)+200*medAngleXR]);
-%         line([centroids(i,2)-200*medAngleYR centroids(i,2)+200*medAngleYR], [centroids(i,1)-200 centroids(i,1)+200]);
-%     end
-%     if (sides(i)==3)
-%         line([centroids(i,2)-200 centroids(i,2)+200], [centroids(i,1)-200*medAngleXR centroids(i,1)+200*medAngleXR]);
-%         line([centroids(i,2)-200 centroids(i,2)+200], [centroids(i,1)-200*medAngleXL centroids(i,1)+200*medAngleXL]);
-%     end
-%     line([medXL-200 medXL+200], [medYL-200*medAngleXL medYL+200*medAngleXL]);
-%     line([medXL-200*medAngleYL medXL+200*medAngleYL], [medYL-200 medYL+200]);
-%     line([medXR-200 medXR+200], [medYR-200*medAngleXR medYR+200*medAngleXR]);
-%     line([medXR-200*medAngleYR medXR+200*medAngleYR], [medYR-200 medYR+200]);
-% end
+figure, imshow(img), hold on;
+for i=1:n
+    line([medXL-200 medXL+200], [medYL-200*medAngleXL medYL+200*medAngleXL], 'Color', 'Red');
+    line([medXL-200*medAngleYL medXL+200*medAngleYL], [medYL-200 medYL+200], 'Color', 'Red');
+    line([medXR-200 medXR+200], [medYR-200*medAngleXR medYR+200*medAngleXR], 'Color', 'Blue');
+    line([medXR-200*medAngleYR medXR+200*medAngleYR], [medYR-200 medYR+200], 'Color', 'Blue');
+end
+
+%kreslenie mriezky
+figure, imshow(img), hold on;
+for i=1:n
+    if (sides(i)==1)
+        line([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN], [centroids(i,1)-AXE_LEN*medAngleXL centroids(i,1)+AXE_LEN*medAngleXL], 'Color', 'Red');
+        line([centroids(i,2)-AXE_LEN*medAngleYL centroids(i,2)+AXE_LEN*medAngleYL], [centroids(i,1)-AXE_LEN centroids(i,1)+AXE_LEN], 'Color', 'Red');
+    end
+    if (sides(i)==2)
+        line([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN], [centroids(i,1)-AXE_LEN*medAngleXR centroids(i,1)+AXE_LEN*medAngleXR], 'Color', 'Yellow');
+        line([centroids(i,2)-AXE_LEN*medAngleYR centroids(i,2)+AXE_LEN*medAngleYR], [centroids(i,1)-AXE_LEN centroids(i,1)+AXE_LEN], 'Color', 'Yellow');
+    end
+    if (sides(i)==3)
+        line([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN],...
+            [centroids(i,1)-AXE_LEN*medAngleXR*AXE_U_PERSP_MODIF centroids(i,1)+AXE_LEN*medAngleXR*AXE_U_PERSP_MODIF], 'Color', 'Blue');
+        line([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN],...
+            [centroids(i,1)-AXE_LEN*medAngleXL*AXE_U_PERSP_MODIF centroids(i,1)+AXE_LEN*medAngleXL*AXE_U_PERSP_MODIF], 'Color', 'Blue');
+    end
+end
 
 
 %najdene chybajuce labely
@@ -239,14 +253,16 @@ foundL = [];
 foundR = [];
 foundU = [];
 
+AXE_LEN = 1000;
+
 %prejdeme vsetky pary labelov na stene a najdeme priesecnik osi, ktore cez
 %ne prechadzaju. tym najdeme vsetky labely, tie co mame aj tie co chybaju
 for i=1:n
     if (sides(i)==1)
         for j=1:n
             if (i~=j && sides(j)==1)
-                [x y] = polyxpoly([centroids(i,2)-200 centroids(i,2)+200], [centroids(i,1)-200*medAngleXL centroids(i,1)+200*medAngleXL],...
-                    [centroids(j,2)-200*medAngleYL centroids(j,2)+200*medAngleYL], [centroids(j,1)-200 centroids(j,1)+200]);
+                [x y] = polyxpoly([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN], [centroids(i,1)-AXE_LEN*medAngleXL centroids(i,1)+AXE_LEN*medAngleXL],...
+                    [centroids(j,2)-AXE_LEN*medAngleYL centroids(j,2)+AXE_LEN*medAngleYL], [centroids(j,1)-AXE_LEN centroids(j,1)+AXE_LEN]);
 %                 img = krizik(img, y, x, [0 0 255]);
                 foundL(end+1,:) = [y x];
             end
@@ -255,8 +271,8 @@ for i=1:n
     if (sides(i)==2)
         for j=1:n
             if (i~=j && sides(j)==2)
-                [x y] = polyxpoly([centroids(i,2)-200 centroids(i,2)+200], [centroids(i,1)-200*medAngleXR centroids(i,1)+200*medAngleXR],...
-                    [centroids(j,2)-200*medAngleYR centroids(j,2)+200*medAngleYR], [centroids(j,1)-200 centroids(j,1)+200]);
+                [x y] = polyxpoly([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN], [centroids(i,1)-AXE_LEN*medAngleXR centroids(i,1)+AXE_LEN*medAngleXR],...
+                    [centroids(j,2)-AXE_LEN*medAngleYR centroids(j,2)+AXE_LEN*medAngleYR], [centroids(j,1)-AXE_LEN centroids(j,1)+AXE_LEN]);
 %                img = krizik(img, y, x, [0 0 255]);
                 foundR(end+1,:) = [y x];
             end
@@ -265,8 +281,10 @@ for i=1:n
     if (sides(i)==3)
         for j=1:n
             if (i~=j && sides(j)==3)
-                [x y] = polyxpoly([centroids(i,2)-200 centroids(i,2)+200], [centroids(i,1)-200*medAngleXR centroids(i,1)+200*medAngleXR],...
-                    [centroids(j,2)-200 centroids(j,2)+200], [centroids(j,1)-200*medAngleXL centroids(j,1)+200*medAngleXL]);
+                [x y] = polyxpoly([centroids(i,2)-AXE_LEN centroids(i,2)+AXE_LEN],...
+                    [centroids(i,1)-AXE_LEN*medAngleXR*AXE_U_PERSP_MODIF centroids(i,1)+AXE_LEN*medAngleXR*AXE_U_PERSP_MODIF],...
+                    [centroids(j,2)-AXE_LEN centroids(j,2)+AXE_LEN],...
+                    [centroids(j,1)-AXE_LEN*medAngleXL*AXE_U_PERSP_MODIF centroids(j,1)+AXE_LEN*medAngleXL*AXE_U_PERSP_MODIF]);
 %                img = krizik(img, y, x, [0 0 255]);
                 foundU(end+1,:) = [y x];
             end
@@ -292,81 +310,150 @@ edgeL = sqrt(median(areaL));
 edgeR = sqrt(median(areaR));
 edgeU = (edgeL+edgeR) / 2;
 
-%centroidy chybajucich stvorcekov
-centroidsL = [];
-centroidsR = [];
-centroidsU = [];
+EDGE_SIZE_MODIF = .7;
 
-%prejdem vsetky najdene priesecniky osi a vyberieme tie, co su dost daleko
+foundLfiltered = [];
+foundRfiltered = [];
+foundUfiltered = [];
+
+%prejdeme vsetky najdene priesecniky osi a vyberieme tie, co su dost daleko
 %od ostatnych znamych labelov
-for i=1:size(foundL)
-    if (cntL >= 9)
-        break;
-    end
+for i=1:size(foundL,1)
     d = 10^6;
     for j=1:n
         if (sides(j)==1)
             d = min(d,dist(foundL(i,:),centroids(j,:)));
         end
     end
-    for j=1:size(centroidsL)
-        d = min(d,dist(foundL(i,:),centroidsL(j,:)));
-    end
-    if (d>edgeL*.6)
-        cntL = cntL + 1;
-        centroidsL(end+1,:) = foundL(i,:);
-        img = krizik(img, centroidsL(end,1), centroidsL(end,2),...
-            I(round(centroidsL(end,1)),round(centroidsL(end,2)),:));
+    if (d>edgeL*EDGE_SIZE_MODIF)
+        foundLfiltered(end+1,:) = foundL(i,:);
     end
 end
 
-for i=1:size(foundR)
-    if (cntR >= 9)
-        break;
-    end
+for i=1:size(foundR,1)
     d = 10^6;
     for j=1:n
         if (sides(j)==2)
             d = min(d,dist(foundR(i,:),centroids(j,:)));
         end
     end
-    for j=1:size(centroidsR)
-        d = min(d,dist(foundR(i,:),centroidsR(j,:)));
-    end
-    if (d>edgeR*.6)
-        cntR = cntR + 1;
-        centroidsR(end+1,:) = foundR(i,:);
-        img = krizik(img, centroidsR(end,1), centroidsR(end,2),...
-            I(round(centroidsR(end,1)),round(centroidsR(end,2)),:));
+    if (d>edgeR*EDGE_SIZE_MODIF)
+        foundRfiltered(end+1,:) = foundR(i,:);
     end
 end
 
-for i=1:size(foundU)
-    if (cntU >= 9)
-        break;
-    end
+for i=1:size(foundU,1)
     d = 10^6;
     for j=1:n
         if (sides(j)==3)
             d = min(d,dist(foundU(i,:),centroids(j,:)));
         end
     end
-    for j=1:size(centroidsU)
-        d = min(d,dist(foundU(i,:),centroidsU(j,:)));
-    end
-    if (d>edgeU*.6)
-        cntU = cntU + 1;
-        centroidsU(end+1,:) = foundU(i,:);
-        img = krizik(img, centroidsU(end,1), centroidsU(end,2),...
-            I(round(centroidsU(end,1)),round(centroidsU(end,2)),:));
+    if (d>edgeU*EDGE_SIZE_MODIF)
+        foundUfiltered(end+1,:) = foundU(i,:);
     end
 end
 
+%vysledne centroidy a farby stvorcekov
+centroidsL = [];
+centroidsR = [];
+centroidsU = [];
+colorsL = [];
+colorsR = [];
+colorsU = [];
 
-%TODO: ocislovanie po riadkoch
+%pridame zname
+for i=1:n
+   if (sides(i)==1)
+       centroidsL(end+1,:) = centroids(i,:);
+       colorsL(end+1,:) = colors(i,:);
+   end
+   if (sides(i)==2)
+       centroidsR(end+1,:) = centroids(i,:);
+       colorsR(end+1,:) = colors(i,:);
+   end
+   if (sides(i)==3)
+       centroidsU(end+1,:) = centroids(i,:);
+       colorsU(end+1,:) = colors(i,:);
+   end
+end
+
+%pomocou k-means pozhlukujeme a ziskame chybajuce
+if (cntL < 9 && size(foundLfiltered,1) >= 9-cntL)
+    [IDX C] = kmeans(foundLfiltered, 9-cntL);
+    for i=1:size(C,1)
+        centroidsL(end+1,:) = C(i,:);
+        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:));
+        colorsL(end+1,:) = I(round(C(i,1)),round(C(i,2)),:);
+    end
+end
+if (cntR < 9 && size(foundRfiltered,1) >= 9-cntR)
+    [IDX C] = kmeans(foundRfiltered, 9-cntR);
+    for i=1:size(C,1)
+        centroidsR(end+1,:) = C(i,:);
+        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:));
+        colorsR(end+1,:) = I(round(C(i,1)),round(C(i,2)),:);
+    end
+end
+% img2 = img;
+% for i=1:size(foundUfiltered)
+%     img2 = krizik(img2, foundUfiltered(i,1), foundUfiltered(i,2), [255 255 255]);
+% end
+% figure, imshow(img2);
+if (cntU < 9 &&  size(foundUfiltered,1) >= 9-cntU)
+    [IDX C] = kmeans(foundUfiltered, 9-cntU,'replicates',10);
+    for i=1:size(C,1)
+        centroidsU(end+1,:) = C(i,:);
+        img = krizik(img, C(i,1), C(i,2), I(round(C(i,1)),round(C(i,2)),:));
+        colorsU(end+1,:) = I(round(C(i,1)),round(C(i,2)),:);
+    end
+end
 
 figure, imshow(img);
 hold off;
+
+%vykreslenie vsetkych centroidov pre kontrolu
+imgC = img;
+imgC(:,:,:) = 0;
+for i=1:size(centroidsL,1)
+    imgC = krizik(imgC, centroidsL(i,1), centroidsL(i,2), colorsL(i,:));
+end
+for i=1:size(centroidsR,1)
+    imgC = krizik(imgC, centroidsR(i,1), centroidsR(i,2), colorsR(i,:));
+end
+for i=1:size(centroidsU,1)
+    imgC = krizik(imgC, centroidsU(i,1), centroidsU(i,2), colorsU(i,:));
+end
+figure, imshow(imgC);
+
+if (size(centroidsL,1)~=9 || size(centroidsR,1)~=9 || size(centroidsU,1)~=9)
+    return;
+end
+
+[centroidsLsorted, colorsLsorted] = getLabelOrder(1, centroidsL, colorsL, 0);
+[centroidsRsorted, colorsRsorted] = getLabelOrder(2, centroidsR, colorsR, 0);
+[centroidsUsorted, colorsUsorted] = getLabelOrder(3, centroidsU, colorsU, medAngleXR*AXE_U_PERSP_MODIF);
+
+imgC = img;
+imgC(:,:,:) = 0;
+for i=1:9
+    txtInserter = vision.TextInserter(strcat('L',num2str(i)),'Color',colorsLsorted(i,:),...
+        'Location',[centroidsLsorted(i,1)-10, centroidsLsorted(i,2)-10]);
+    imgC = step(txtInserter,imgC);
+end
+for i=1:9
+    txtInserter = vision.TextInserter(strcat('R',num2str(i)),'Color',colorsRsorted(i,:),...
+        'Location',[centroidsRsorted(i,1)-10, centroidsRsorted(i,2)-10]);
+    imgC = step(txtInserter,imgC);
+end
+for i=1:9
+    txtInserter = vision.TextInserter(strcat('U',num2str(i)),'Color',colorsUsorted(i,:),...
+        'Location',[centroidsUsorted(i,1)-10, centroidsUsorted(i,2)-10]);
+    imgC = step(txtInserter,imgC);
+end
+figure, imshow(imgC);
+
+
 
 end
 
@@ -375,9 +462,11 @@ end
 
 
 function [I] = krizik(Iorig, x, y, col)
-for i=-5:5
-    Iorig(round(x)+i,round(y),:) = col;
-    Iorig(round(x),round(y)+i,:) = col;
+for k=-1:1:1
+    for i=-5:5
+        Iorig(round(x)+i,round(y)+k,:) = col;
+        Iorig(round(x)+k,round(y)+i,:) = col;
+    end
 end
 I = Iorig;
 end
@@ -387,6 +476,12 @@ end
 
 function [d] = dist(a, b)
 d = sqrt ((a(1)-b(1))^2 + (a(2)-b(2))^2);
+end
+
+
+
+function [d] = distLinePoint(line, point)
+d = abs(cross(line(2)-line(1),point-line(1)))/abs(line(2)-line(1));
 end
 
 

@@ -28,7 +28,7 @@ DR = [];
 DRscore = -10^6;
 DRscoreX = -10^6;
 
-for i=1:size(labelBounds)
+for i=1:size(labelBounds,1)
     
      x = labelBounds(i,1);
      y = labelBounds(i,2);
