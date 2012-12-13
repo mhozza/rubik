@@ -1,5 +1,4 @@
 #include "rgbhsv.h"
-#include <cfloat>
 #include <iostream>
 
 using namespace std;
@@ -24,14 +23,22 @@ hsv rgb2hsv(rgbcolor color)
     out.v = max;                                // v
     delta = max - min;
 
-    if( delta > 0.0 ) {
-        out.s = (max / delta);                  // s
+    if( max > 0.0 ) {
+        out.s = (delta / max);                  // s
     } else {
         // r = g = b = 0                        // s = 0, v is undefined
         out.s = 0.0;
         out.h = 0.0;                            // its now undefined
         return out;
     }
+
+    if(delta==0)
+    {
+        out.s = 0.0;
+        out.h = 0.0;
+        return out;
+    }
+
     if( in.r >= max )                           // > is bogus, just keeps compilor happy
         out.h = ( in.g - in.b ) / delta;        // between yellow & magenta
     else
@@ -56,7 +63,7 @@ rgb hsv2rgb(hsv in)
     rgb         out;
 
     if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
-        if(_isnan(in.h)) {   // in.h == NAN
+        if(isnan(in.h)) {   // in.h == NAN
             out.r = in.v;
             out.g = in.v;
             out.b = in.v;
