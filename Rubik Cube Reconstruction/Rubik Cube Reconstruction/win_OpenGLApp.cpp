@@ -317,13 +317,35 @@ Result:	Application messages handler.
 
 /*---------------------------------------------*/
 
+extern char sTxtFile1[255], sTxtFile2[255];
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR sCmdLine, int iShow)
 {
-	if(!appMain.initializeApp("10_opengl_3_3"))
+	if(!appMain.initializeApp("rubik_cube_recon"))
 		return 0;
+
+	sTxtFile1[0] = sTxtFile2[0] = 0;
+	int l = strlen(sCmdLine);
+	int ind = 0; int indc = 0;
+	FOR(i, l)
+	{
+		if(sCmdLine[i] == ' ')
+		{
+			if(ind == 0)sTxtFile1[indc] = 0;
+			if(ind == 1)sTxtFile2[indc] = 0;
+			ind++;
+			indc = 0;
+			continue;
+		}
+		if(ind == 0)sTxtFile1[indc++] = sCmdLine[i];
+		if(ind == 1)sTxtFile2[indc++] = sCmdLine[i];
+	}
+	if(ind == 0)sTxtFile1[indc++] = 0;
+	if(ind == 1)sTxtFile2[indc++] = 0;
+
 	appMain.registerAppClass(hInstance);
 
-	if(!appMain.createWindow("10.) Skybox - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+	if(!appMain.createWindow("OpenGL Rubik's Cube Reconstruction"))
 		return 0;
 	appMain.resetTimer();
 

@@ -2,7 +2,7 @@
 
 /********************************
 
-Class:	CShader
+Class:		CShader
 
 Purpose:	Wraps OpenGL shader loading
 			and compiling.
@@ -14,6 +14,8 @@ class CShader
 public:
 	bool loadShader(string sFile, int a_iType);
 	void deleteShader();
+
+	bool getLinesFromFile(string sFile, bool bIncludePart, vector<string>* vResult);
 
 	bool isLoaded();
 	UINT getShaderID();
@@ -28,7 +30,7 @@ private:
 
 /********************************
 
-Class:	CShaderProgram
+Class:		CShaderProgram
 
 Purpose:	Wraps OpenGL shader program
 			and make its usage easy.
@@ -47,7 +49,6 @@ public:
 	void useProgram();
 
 	UINT getProgramID();
-
 
 	// Setting vectors
 	void setUniform(string sName, glm::vec2* vVectors, int iCount = 1);
@@ -68,7 +69,7 @@ public:
 	// Setting 4x4 matrices
 	void setUniform(string sName, glm::mat4* mMatrices, int iCount = 1);
 	void setUniform(string sName, const glm::mat4 mMatrix);
-
+ 
 	// Setting integers
 	void setUniform(string sName, int* iValues, int iCount = 1);
 	void setUniform(string sName, const int iValue);
@@ -79,3 +80,5 @@ private:
 	UINT uiProgram; // ID of program
 	bool bLinked; // Whether program was linked and is ready to use
 };
+
+bool PrepareShaderPrograms();

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Rubik Cube Reconstruction"
 	ProjectGUID="{8DAAC9C8-4D7C-4E80-B221-AE9C92E21B3A}"
 	RootNamespace="RubikCubeReconstruction"
@@ -196,6 +196,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\match_color.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\match_color.h"
+				>
+			</File>
+			<File
 				RelativePath=".\openGLControl.cpp"
 				>
 			</File>
@@ -205,6 +213,14 @@
 			</File>
 			<File
 				RelativePath=".\renderScene.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\rgbhsv.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\rgbhsv.h"
 				>
 			</File>
 			<File
@@ -229,6 +245,10 @@
 			</File>
 			<File
 				RelativePath=".\static_geometry.h"
+				>
+			</File>
+			<File
+				RelativePath=".\structs.h"
 				>
 			</File>
 			<File

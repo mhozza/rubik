@@ -43,6 +43,8 @@ CFreeTypeFont ftFont;
 
 CSkybox sbMainSkybox;
 
+bool bMatchedColors = true;
+
 /*-----------------------------------------------
 
 Name:		initScene
@@ -58,20 +60,29 @@ Result:	Initializes OpenGL features that will
 
 int iTorusFaces;
 
-glm::vec4 vRubikColors[6] = 
+#include "match_color.h"
+
+glm::vec4 vRubikColors[7] = 
 {
 	glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), // Red
 	glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), // Green
 	glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), // Blue
 	glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), // Orange
 	glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), // Yellow
-	glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) // White
+	glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), // White
+	glm::vec4(0.0f, 0.0f, 0.0f, 1.0f) // Black
 };
+
+glm::vec4 rgbcolortomyrgb(rgbcolor rgb)
+{
+	return glm::vec4(float(rgb.r)/255.0f, float(rgb.g)/255.0f, float(rgb.b)/255.0f, 1.0f);
+}
 
 class CRubikSubcube
 {
 public:
 	int iSideColors[6];
+	glm::vec4 vRealColor[6];
 };
 
 CRubikSubcube subCubes[3][3][3];
@@ -98,6 +109,21 @@ bool ShouldHighLight(int iWall, int y, int x, int z)
 
 	return false;
 }
+
+void ExtractIndices(int index, int* y, int* x, int* z)
+{
+	*y = index/9;
+	*x = (index%9)/3;
+	*z = index%3;
+}
+
+int PackIndices(int y, int x, int z)
+{
+	return y*9 + x*3 + z;
+}
+
+
+char sTxtFile1[255], sTxtFile2[255];
 
 void initScene(LPVOID lpParam)
 {
@@ -167,7 +193,7 @@ void initScene(LPVOID lpParam)
 
 	// Load textures
 
-	string sTextureNames[] = {"grass.jpg", "crate.jpg", "crate_nyan.jpg"};
+	string sTextureNames[] = {"ik_itrimv_128b.jpg", "crate.jpg", "crate_nyan.jpg"};
 
 	FOR(i, NUMTEXTURES) // I know that FOR cycle is useless now, but it was easier to rewrite :)
 	{
@@ -183,10 +209,10 @@ void initScene(LPVOID lpParam)
 	ftFont.loadSystemFont("arial.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
-	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 30.0f), glm::vec3(0.0f, 29.8f, 29.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 30.0f), glm::vec3(0.0f, 29.8f, 29.0f), glm::vec3(0.0f, 1.0f, 0.0f), 50.0f, 0.1f);
 	cCamera.setMovingKeys('W', 'S', 'A', 'D');
 
-	sbMainSkybox.loadSkybox("data\\skyboxes\\jajlands1\\", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
+	sbMainSkybox.loadSkybox("data\\skyboxes\\jajspace1\\", "jajspace1_ft.jpg", "jajspace1_bk.jpg", "jajspace1_lf.jpg", "jajspace1_rt.jpg", "jajspace1_up.jpg", "jajspace1_dn.jpg");
 
 	FOR(y, 3)FOR(x, 3)FOR(z, 3)
 	{
@@ -205,6 +231,83 @@ void initScene(LPVOID lpParam)
 		if(z == 2)CubeWalls[y][x][z].push_back(FRONT);
 	}
 
+	vRubikColors[0] = rgbcolortomyrgb(RED); vRubikColors[1] = rgbcolortomyrgb(GREEN); vRubikColors[2] = rgbcolortomyrgb(BLUE);
+	vRubikColors[3] = rgbcolortomyrgb(ORANGE); vRubikColors[4] = rgbcolortomyrgb(YELLOW); vRubikColors[5] = rgbcolortomyrgb(WHITE);
+
+	if(sTxtFile1[0] != 0 && sTxtFile2[0] != 0)
+	{
+		FOR(y, 3)FOR(x, 3)FOR(z, 3)
+		{
+			FOR(k, 6)subCubes[y][x][z].iSideColors[k] = 6; // Black
+		}
+		FILE* fp = fopen(sTxtFile1, "rt");
+
+		int iMappingTop[] = {PackIndices(0, 0, 0), PackIndices(0, 1, 0), PackIndices(0, 2, 0),
+			PackIndices(0, 0, 1), PackIndices(0, 1, 1), PackIndices(0, 2, 1),
+			PackIndices(0, 0, 2), PackIndices(0, 1, 2), PackIndices(0, 2, 2)};
+
+		int iMappingFront[] = {PackIndices(0, 0, 2), PackIndices(0, 1, 2), PackIndices(0, 2, 2),
+			PackIndices(1, 0, 2), PackIndices(1, 1, 2), PackIndices(1, 2, 2),
+			PackIndices(2, 0, 2), PackIndices(2, 1, 2), PackIndices(2, 2, 2)};
+
+		int iMappingRight[] = {PackIndices(0, 2, 0), PackIndices(0, 2, 1), PackIndices(0, 2, 2),
+			PackIndices(1, 2, 0), PackIndices(1, 2, 1), PackIndices(1, 2, 2),
+			PackIndices(2, 2, 0), PackIndices(2, 2, 1), PackIndices(2, 2, 2)};
+
+		rgbcolor orders[] = {RED, GREEN, BLUE, ORANGE, YELLOW, WHITE};
+		FOR(i, 9) // Front wall
+		{
+			rgbcolor clr; fscanf(fp, "%d %d %d", &clr.r, &clr.g, &clr.b);
+			rgbcolor matched = match_color(clr);
+			
+			int ind = 6;
+			FOR(j, 6)if(orders[j].r == matched.r && orders[j].g == matched.g && orders[j].b == matched.b)
+			{
+				ind = j;
+				break;
+			}
+			int y, x, z;
+			ExtractIndices(iMappingFront[i], &y, &x, &z);
+			subCubes[y][x][z].iSideColors[FRONT] = ind;
+			subCubes[y][x][z].vRealColor[FRONT] = rgbcolortomyrgb(clr);
+		}
+
+		FOR(i, 9) // Right wall
+		{
+			rgbcolor clr; fscanf(fp, "%d %d %d", &clr.r, &clr.g, &clr.b);
+			rgbcolor matched = match_color(clr);
+			int ind = 6;
+			FOR(j, 6)if(orders[j].r == matched.r && orders[j].g == matched.g && orders[j].b == matched.b)
+			{
+				ind = j;
+				break;
+			}
+			int y, x, z;
+			ExtractIndices(iMappingRight[i], &y, &x, &z);
+			subCubes[y][x][z].iSideColors[RIGHT] = ind;
+			subCubes[y][x][z].vRealColor[RIGHT] = rgbcolortomyrgb(clr);
+		}
+
+		FOR(i, 9) // Top wall
+		{
+			rgbcolor clr; fscanf(fp, "%d %d %d", &clr.r, &clr.g, &clr.b);
+			rgbcolor matched = match_color(clr);
+			int ind = 6;
+			FOR(j, 6)if(orders[j].r == matched.r && orders[j].g == matched.g && orders[j].b == matched.b)
+			{
+				ind = j;
+				break;
+			}
+			int y, x, z;
+			ExtractIndices(iMappingTop[i], &y, &x, &z);
+			subCubes[y][x][z].iSideColors[TOP] = ind;
+			subCubes[y][x][z].vRealColor[TOP] = rgbcolortomyrgb(clr);
+		}
+
+
+		fclose(fp);
+	}
+
 }
 
 /*-----------------------------------------------
@@ -220,17 +323,6 @@ Result:	Renders whole scene.
 float fGlobalAngle;
 float fRotatingAngle = 0.0;
 
-void ExtractIndices(int index, int* y, int* x, int* z)
-{
-	*y = index/9;
-	*x = (index%9)/3;
-	*z = index%3;
-}
-
-int PackIndices(int y, int x, int z)
-{
-	return y*9 + x*3 + z;
-}
 
 
 void RotateWall(int* iIndices, bool bClockwise, int iMapping)
@@ -267,7 +359,7 @@ void RotateWall(int* iIndices, bool bClockwise, int iMapping)
 
 }
 
-
+float nyansgn = 1;
 
 void renderScene(LPVOID lpParam)
 {
@@ -315,14 +407,27 @@ void renderScene(LPVOID lpParam)
 		}
 	}
 
-	if(Keys::onekey(VK_RBUTTON))
+	if(Keys::onekey(VK_LEFT) || Keys::onekey('Q'))
 	{
 		if(iSelectedWall >= 0)
 		{
 			bRotatingWall[iSelectedWall] = true;
-			fRotatingAngle = 0.0;
-			bClockwiseRotation = iSelectedWall%2 ? false : true;
+			//fRotatingAngle = 0.0;
+			bClockwiseRotation = iSelectedWall%2 ? true : false;
+			nyansgn = bClockwiseRotation ? 1 : -1;
 		}
+	}
+
+	if(Keys::onekey(VK_RIGHT) || Keys::onekey('E'))
+	{
+		if(iSelectedWall >= 0)
+		{
+			bRotatingWall[iSelectedWall] = true;
+			//fRotatingAngle = 0.0;
+			bClockwiseRotation = iSelectedWall%2 ? false : true;
+			nyansgn = bClockwiseRotation ? -1 : 1;
+		}
+		
 	}
 
 	if(Keys::onekey(VK_LBUTTON))
@@ -347,7 +452,7 @@ void renderScene(LPVOID lpParam)
 			iSelectedWall = CubeWalls[y][x][z][iSelectedWallIndex];
 
 			char data[222]; sprintf(data, "CC:  %d IND: %d WALL: %d Y: %d, X: %d, Z: %d",iClickedCube, iSelectedWallIndex, iSelectedWall, y, x, z);
-			SetWindowText(appMain.hWnd, data);
+			//SetWindowText(appMain.hWnd, data);
 		}
 	}
 
@@ -395,11 +500,11 @@ void renderScene(LPVOID lpParam)
 				
 				FOR(k, 6)
 				{
-					glm::vec4 vColor = vRubikColors[subCubes[y][x][z].iSideColors[k]];
+					glm::vec4 vColor = bMatchedColors ? vRubikColors[subCubes[y][x][z].iSideColors[k]] : subCubes[y][x][z].vRealColor[k];
 					if(ShouldHighLight(iSelectedWall, y, x, z))
 					{
-						float sgn = bClockwiseRotation ? -1 : 1;
-						spDirectionalLight.setUniform("texCoordRotAngle", sgn*fRotatingAngle*3.1415535926f/180.0f);
+
+						spDirectionalLight.setUniform("texCoordRotAngle", nyansgn*fRotatingAngle*3.1415535926f/180.0f);
 						tTextures[2].bindTexture();
 					}
 					else
@@ -466,18 +571,24 @@ void renderScene(LPVOID lpParam)
 	if(bUpdate)
 		cCamera.update();
 	if(Keys::onekey('U'))bUpdate = !bUpdate;
+	if(Keys::onekey('C'))bMatchedColors = !bMatchedColors;
 
 	// Print something over scene
 
 	spFont2D.useProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.setUniform("projectionMatrix", oglControl->getOrthoMatrix());
-	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
-	ftFont.print("www.mbsoftworks.sk", 20, 20);
+	RECT rect; GetClientRect(appMain.hWnd, &rect);
+	char sFormat[255]; sprintf(sFormat, "Using: %s colors ('C' to toggle)", bMatchedColors ? "matched" : "original");
+	ftFont.print(sFormat, 12, rect.bottom-30, 16);
 
 	glEnable(GL_DEPTH_TEST);
 	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
+
+
+
 
 	oglControl->swapBuffers();
 }

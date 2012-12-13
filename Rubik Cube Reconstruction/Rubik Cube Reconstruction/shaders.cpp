@@ -9,12 +9,28 @@ CShader::CShader()
 	bLoaded = false;
 }
 
+
 /*-----------------------------------------------
 
-Name:	loadShader
+Name:	PrepareShaderPrograms
 
-Params:	sFile - path to a file
-		a_iType - type of shader (fragment, vertex, geometry)
+Params:	none
+
+Result:	Loads all shaders and creates shader programs.
+
+/*---------------------------------------------*/
+
+bool PrepareShaderPrograms()
+{
+return true;
+}
+
+/*-----------------------------------------------
+
+Name:    LoadShader
+
+Params:  sFile - path to a file
+         a_iType - type of shader (fragment, vertex, geometry)
 
 Result:	Loads and compiles shader.
 
@@ -22,15 +38,9 @@ Result:	Loads and compiles shader.
 
 bool CShader::loadShader(string sFile, int a_iType)
 {
-	FILE* fp = fopen(sFile.c_str(), "rt");
-	if(!fp)return false;
-
-	// Get all lines from a file
-
 	vector<string> sLines;
-	char sLine[255];
-	while(fgets(sLine, 255, fp))sLines.push_back(sLine);
-	fclose(fp);
+
+	if(!getLinesFromFile(sFile, false, &sLines))return false;
 
 	const char** sProgram = new const char*[ESZ(sLines)];
 	FOR(i, ESZ(sLines))sProgram[i] = sLines[i].c_str();
@@ -45,16 +55,88 @@ bool CShader::loadShader(string sFile, int a_iType)
 	int iCompilationStatus;
 	glGetShaderiv(uiShader, GL_COMPILE_STATUS, &iCompilationStatus);
 
-	if(iCompilationStatus == GL_FALSE)return false;
+	if(iCompilationStatus == GL_FALSE)
+	{
+		char sInfoLog[1024];
+		char sFinalMessage[1536];
+		int iLogLength;
+		glGetShaderInfoLog(uiShader, 1024, &iLogLength, sInfoLog);
+		sprintf(sFinalMessage, "Error! Shader file %s wasn't compiled! The compiler returned:\n\n%s", sFile.c_str(), sInfoLog);
+		MessageBox(NULL, sFinalMessage, "Error", MB_ICONERROR);
+		return false;
+	}
 	iType = a_iType;
 	bLoaded = true;
 
-	return 1;
+	return true;
 }
 
 /*-----------------------------------------------
 
-Name:	isLoaded
+Name:    GetLinesFromFile
+
+Params:  sFile - path to a file
+         bIncludePart - whether to add include part only
+         vResult - vector of strings to store result to
+
+Result:  Loads and adds include part.
+
+/*---------------------------------------------*/
+
+bool CShader::getLinesFromFile(string sFile, bool bIncludePart, vector<string>* vResult)
+{
+	FILE* fp = fopen(sFile.c_str(), "rt");
+	if(!fp)return false;
+
+	string sDirectory;
+	int slashIndex = -1;
+	RFOR(i, ESZ(sFile)-1)
+	{
+		if(sFile[i] == '\\' || sFile[i] == '/')
+		{
+			slashIndex = i;
+			break;
+		}
+	}
+
+	sDirectory = sFile.substr(0, slashIndex+1);
+
+	// Get all lines from a file
+
+	char sLine[255];
+
+	bool bInIncludePart = false;
+
+	while(fgets(sLine, 255, fp))
+	{
+		stringstream ss(sLine);
+		string sFirst;
+		ss >> sFirst;
+		if(sFirst == "#include")
+		{
+			string sFileName;
+			ss >> sFileName;
+			if(ESZ(sFileName) > 0 && sFileName[0] == '\"' && sFileName[ESZ(sFileName)-1] == '\"')
+			{
+				sFileName = sFileName.substr(1, ESZ(sFileName)-2);
+				getLinesFromFile(sDirectory+sFileName, true, vResult);
+			}
+		}
+		else if(sFirst == "#include_part")
+			bInIncludePart = true;
+		else if(sFirst == "#definition_part")
+			bInIncludePart = false;
+		else if(!bIncludePart || (bIncludePart && bInIncludePart))
+			vResult->push_back(sLine);
+	}
+	fclose(fp);
+
+	return true;
+}
+
+/*-----------------------------------------------
+
+Name:	IsLoaded
 
 Params:	none
 
@@ -69,7 +151,7 @@ bool CShader::isLoaded()
 
 /*-----------------------------------------------
 
-Name:	getShaderID
+Name:	GetShaderID
 
 Params:	none
 
@@ -84,7 +166,7 @@ UINT CShader::getShaderID()
 
 /*-----------------------------------------------
 
-Name:	deleteShader
+Name:	DeleteShader
 
 Params:	none
 
@@ -106,7 +188,7 @@ CShaderProgram::CShaderProgram()
 
 /*-----------------------------------------------
 
-Name:	createProgram
+Name:	CreateProgram
 
 Params:	none
 
@@ -121,7 +203,7 @@ void CShaderProgram::createProgram()
 
 /*-----------------------------------------------
 
-Name:	addShaderToProgram
+Name:	AddShaderToProgram
 
 Params:	sShader - shader to add
 
@@ -141,7 +223,7 @@ bool CShaderProgram::addShaderToProgram(CShader* shShader)
 
 /*-----------------------------------------------
 
-Name:	linkProgram
+Name:	LinkProgram
 
 Params:	none
 
@@ -160,7 +242,7 @@ bool CShaderProgram::linkProgram()
 
 /*-----------------------------------------------
 
-Name:	deleteProgram
+Name:	DeleteProgram
 
 Params:	none
 
@@ -177,7 +259,7 @@ void CShaderProgram::deleteProgram()
 
 /*-----------------------------------------------
 
-Name:	useProgram
+Name:	UseProgram
 
 Params:	none
 
@@ -192,7 +274,7 @@ void CShaderProgram::useProgram()
 
 /*-----------------------------------------------
 
-Name:		getProgramID
+Name:	GetProgramID
 
 Params:	none
 
@@ -207,12 +289,12 @@ UINT CShaderProgram::getProgramID()
 
 /*-----------------------------------------------
 
-Name:		uniformSetters
+Name:	UniformSetters
 
 Params:	yes, there are :)
 
 Result:	These set of functions set most common
-			uniform variables.
+		types of uniform variables.
 
 /*---------------------------------------------*/
 
