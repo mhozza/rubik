@@ -15,12 +15,17 @@
 #include <iostream>
 
 rgbcolor RED(196, 30, 58);
+rgbcolor RED_FAKE(131, 15, 35);
 rgbcolor GREEN(0, 158, 96);
+rgbcolor GREEN_FAKE(19, 89, 64);
 rgbcolor BLUE(0, 81, 186);
+rgbcolor BLUE_FAKE(18, 61, 106);
 rgbcolor ORANGE(255, 88, 0);
+rgbcolor ORANGE_FAKE(221, 56, 61);
 rgbcolor YELLOW(255, 213, 0);
+rgbcolor YELLOW_FAKE(219, 170, 16);
 rgbcolor WHITE(255, 255, 255);
-
+rgbcolor WHITE_FAKE(210, 200, 192);
 
 hsv diff(hsv c,hsv o)
 {
@@ -39,42 +44,42 @@ double universal_score(hsv d, double wh, double ws, double wv)
 
 double score_red(hsv c)
 {
-    hsv o = rgb2hsv(RED);
+    hsv o = rgb2hsv(RED_FAKE);
     hsv d = diff(c, o);
     return universal_score(d, 4/12.0, 4/12.0, 4/12.0);
 }
 
 double score_orange(hsv c)
 {
-    hsv o = rgb2hsv(ORANGE);
+    hsv o = rgb2hsv(ORANGE_FAKE);
     hsv d = diff(c, o);
     return universal_score(d, 4/12.0, 4/12.0, 4/12.0);
 }
 
 double score_green(hsv c)
 {
-    hsv o = rgb2hsv(GREEN);
+    hsv o = rgb2hsv(GREEN_FAKE);
     hsv d = diff(c, o);
     return universal_score(d, 7/12.0, 2/12.0,3/12.0);
 }
 
 double score_blue(hsv c)
 {
-    hsv o = rgb2hsv(BLUE);
+    hsv o = rgb2hsv(BLUE_FAKE);
     hsv d = diff(c, o);
     return universal_score(d, 7/12.0, 2/12.0,3/12.0);
 }
 
 double score_yellow(hsv c)
 {
-    hsv o = rgb2hsv(YELLOW);
+    hsv o = rgb2hsv(YELLOW_FAKE);
     hsv d = diff(c, o);
     return universal_score(d, 6/12.0, 3/12.0,3/12.0);
 }
 
 double score_white(hsv c)
 {
-    hsv o = rgb2hsv(WHITE);
+    hsv o = rgb2hsv(WHITE_FAKE);
     hsv d = diff(c, o);
     return universal_score(d, 0, 8/12.0, 4/12.0);
 }
@@ -116,7 +121,6 @@ rgbcolor match_color(rgbcolor color)
         score = scr;
         matched_color = BLUE;
     }
-
 
     scr = score_yellow(c);
     cerr << scr << endl;
