@@ -1,8 +1,6 @@
 // Header files of frequent usage
 
 #include <ctime>
-#include <windows.h>
-
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -14,7 +12,11 @@
 
 using namespace std;
 
-#include <gl/glew.h>
+#include <GL/glew.h>
+//#include <nvidia-current/GL/gl.h>
+//#include <nvidia-current/GL/glext.h>
+//#include <nvidia-current/GL/glx.h>
+//#include <nvidia-current/GL/glxext.h>
 #include <glm/glm.hpp>
 
 // Some useful defines

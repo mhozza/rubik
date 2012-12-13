@@ -4,6 +4,7 @@
 
 #include <FreeImage.h>
 
+
 #pragma comment(lib, "FreeImage.lib")
 
 CTexture::CTexture()
@@ -40,7 +41,7 @@ void CTexture::createFromData(BYTE* bData, int a_iWidth, int a_iHeight, int a_iB
 		if(bGenerateMipMaps)glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
-	glGenSamplers(1, &uiSampler);
+//	glGenSamplers(1, &uiSampler);
 
 	sPath = "";
 	bMipMapsGenerated = bGenerateMipMaps;
@@ -97,7 +98,7 @@ bool CTexture::loadTexture2D(string a_sPath, bool bGenerateMipMaps)
 
 void CTexture::setSamplerParameter(GLenum parameter, GLenum value)
 {
-	glSamplerParameteri(uiSampler, parameter, value);
+//	glSamplerParameteri(uiSampler, parameter, value);
 }
 
 /*-----------------------------------------------

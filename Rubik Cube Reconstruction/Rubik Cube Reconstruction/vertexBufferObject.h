@@ -9,6 +9,9 @@ Purpose:	Wraps OpenGL vertex buffer
 
 ********************************/
 
+typedef unsigned UINT;
+typedef signed char BYTE;
+
 class CVertexBufferObject
 {
 public:

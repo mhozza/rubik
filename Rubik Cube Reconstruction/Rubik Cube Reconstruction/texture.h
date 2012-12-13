@@ -20,6 +20,8 @@ Purpose:	Wraps OpenGL texture
 			their loading.
 
 ********************************/
+typedef unsigned UINT;
+typedef uint8_t BYTE;
 
 class CTexture
 {
