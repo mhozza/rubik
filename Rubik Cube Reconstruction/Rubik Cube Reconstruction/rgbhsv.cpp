@@ -1,6 +1,6 @@
 #include "rgbhsv.h"
 #include <iostream>
-
+#include <cfloat>
 using namespace std;
 
 hsv rgb2hsv(rgbcolor color)
@@ -63,7 +63,7 @@ rgb hsv2rgb(hsv in)
     rgb         out;
 
     if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
-        if(isnan(in.h)) {   // in.h == NAN
+        if(_isnan(in.h)) {   // in.h == NAN
             out.r = in.v;
             out.g = in.v;
             out.b = in.v;

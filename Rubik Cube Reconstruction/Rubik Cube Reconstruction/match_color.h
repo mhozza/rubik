@@ -10,3 +10,5 @@ using namespace std;
 rgbcolor match_color(rgbcolor color);
 
 #endif // MATCH_COLOR_H
+
+extern rgbcolor RED, GREEN, BLUE, ORANGE, YELLOW, WHITE;

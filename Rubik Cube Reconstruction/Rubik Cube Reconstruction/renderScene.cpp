@@ -250,16 +250,17 @@ void initScene(LPVOID lpParam)
 			PackIndices(1, 0, 2), PackIndices(1, 1, 2), PackIndices(1, 2, 2),
 			PackIndices(2, 0, 2), PackIndices(2, 1, 2), PackIndices(2, 2, 2)};
 
-		int iMappingRight[] = {PackIndices(0, 2, 0), PackIndices(0, 2, 1), PackIndices(0, 2, 2),
-			PackIndices(1, 2, 0), PackIndices(1, 2, 1), PackIndices(1, 2, 2),
-			PackIndices(2, 2, 0), PackIndices(2, 2, 1), PackIndices(2, 2, 2)};
+		int iMappingRight[] = {PackIndices(0, 2, 2), PackIndices(0, 2, 1), PackIndices(0, 2, 0),
+			PackIndices(1, 2, 2), PackIndices(1, 2, 1), PackIndices(1, 2, 0),
+			PackIndices(2, 2, 2), PackIndices(2, 2, 1), PackIndices(2, 2, 0)};
 
 		rgbcolor orders[] = {RED, GREEN, BLUE, ORANGE, YELLOW, WHITE};
+
 		FOR(i, 9) // Front wall
 		{
 			rgbcolor clr; fscanf(fp, "%d %d %d", &clr.r, &clr.g, &clr.b);
 			rgbcolor matched = match_color(clr);
-			
+
 			int ind = 6;
 			FOR(j, 6)if(orders[j].r == matched.r && orders[j].g == matched.g && orders[j].b == matched.b)
 			{
@@ -303,9 +304,76 @@ void initScene(LPVOID lpParam)
 			subCubes[y][x][z].iSideColors[TOP] = ind;
 			subCubes[y][x][z].vRealColor[TOP] = rgbcolortomyrgb(clr);
 		}
-
-
 		fclose(fp);
+
+
+
+
+		fp = fopen(sTxtFile2, "rt");
+
+		int iMappingLeft[] = {PackIndices(2, 0, 2), PackIndices(2, 0, 1), PackIndices(2, 0, 0),
+			PackIndices(1, 0, 2), PackIndices(1, 0, 1), PackIndices(1, 0, 0),
+			PackIndices(0, 0, 2), PackIndices(0, 0, 1), PackIndices(0, 0, 0)};
+
+		int iMappingBack[] = {PackIndices(2, 0, 0), PackIndices(2, 1, 0), PackIndices(2, 2, 0),
+			PackIndices(1, 0, 0), PackIndices(1, 1, 0), PackIndices(1, 2, 0),
+			PackIndices(0, 0, 0), PackIndices(0, 1, 0), PackIndices(0, 2, 0)};
+
+		int iMappingBottom[] = {PackIndices(2, 2, 2), PackIndices(2, 2, 1), PackIndices(2, 2, 0),
+			PackIndices(2, 1, 2), PackIndices(2, 1, 1), PackIndices(2, 1, 0),
+			PackIndices(2, 0, 2), PackIndices(2, 0, 1), PackIndices(2, 0, 0)};
+
+		FOR(i, 9) // Left wall
+		{
+			rgbcolor clr; fscanf(fp, "%d %d %d", &clr.r, &clr.g, &clr.b);
+			rgbcolor matched = match_color(clr);
+
+			int ind = 6;
+			FOR(j, 6)if(orders[j].r == matched.r && orders[j].g == matched.g && orders[j].b == matched.b)
+			{
+				ind = j;
+				break;
+			}
+			int y, x, z;
+			ExtractIndices(iMappingLeft[i], &y, &x, &z);
+			subCubes[y][x][z].iSideColors[LEFT] = ind;
+			subCubes[y][x][z].vRealColor[LEFT] = rgbcolortomyrgb(clr);
+		}
+
+		FOR(i, 9) // Back wall
+		{
+			rgbcolor clr; fscanf(fp, "%d %d %d", &clr.r, &clr.g, &clr.b);
+			rgbcolor matched = match_color(clr);
+			int ind = 6;
+			FOR(j, 6)if(orders[j].r == matched.r && orders[j].g == matched.g && orders[j].b == matched.b)
+			{
+				ind = j;
+				break;
+			}
+			int y, x, z;
+			ExtractIndices(iMappingBack[i], &y, &x, &z);
+			subCubes[y][x][z].iSideColors[BACK] = ind;
+			subCubes[y][x][z].vRealColor[BACK] = rgbcolortomyrgb(clr);
+		}
+
+		FOR(i, 9) // Bottom wall
+		{
+			rgbcolor clr; fscanf(fp, "%d %d %d", &clr.r, &clr.g, &clr.b);
+			rgbcolor matched = match_color(clr);
+			int ind = 6;
+			FOR(j, 6)if(orders[j].r == matched.r && orders[j].g == matched.g && orders[j].b == matched.b)
+			{
+				ind = j;
+				break;
+			}
+			int y, x, z;
+			ExtractIndices(iMappingBottom[i], &y, &x, &z);
+			subCubes[y][x][z].iSideColors[BOT] = ind;
+			subCubes[y][x][z].vRealColor[BOT] = rgbcolortomyrgb(clr);
+		}
+		fclose(fp);
+
+
 	}
 
 }
@@ -352,9 +420,18 @@ void RotateWall(int* iIndices, bool bClockwise, int iMapping)
 		int y, x, z; ExtractIndices(iIndices[i], &y, &x, &z);
 		memcpy(&subCubes[y][x][z], &sWall[i], sizeof(CRubikSubcube));
 		int iNewColorMap[6];
+		glm::vec4 vNewColorMap[6];
 		
-		FOR(k, 4)iNewColorMap[iMappingTable[(k+iAdd)%4]] = subCubes[y][x][z].iSideColors[iMappingTable[k]];
-		FOR(k, 4)subCubes[y][x][z].iSideColors[iMappingTable[k]] = iNewColorMap[iMappingTable[k]];
+		FOR(k, 4)
+		{
+			iNewColorMap[iMappingTable[(k+iAdd)%4]] = subCubes[y][x][z].iSideColors[iMappingTable[k]];
+			vNewColorMap[iMappingTable[(k+iAdd)%4]] = subCubes[y][x][z].vRealColor[iMappingTable[k]];
+		}
+		FOR(k, 4)
+		{
+			subCubes[y][x][z].iSideColors[iMappingTable[k]] = iNewColorMap[iMappingTable[k]];
+			subCubes[y][x][z].vRealColor[iMappingTable[k]] = vNewColorMap[iMappingTable[k]];
+		}
 	}
 
 }

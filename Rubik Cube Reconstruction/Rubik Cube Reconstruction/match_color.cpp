@@ -15,16 +15,17 @@
 #include <iostream>
 
 rgbcolor RED(196, 30, 58);
-rgbcolor RED_FAKE(131, 15, 35);
 rgbcolor GREEN(0, 158, 96);
-rgbcolor GREEN_FAKE(19, 89, 64);
 rgbcolor BLUE(0, 81, 186);
-rgbcolor BLUE_FAKE(18, 61, 106);
 rgbcolor ORANGE(255, 88, 0);
-rgbcolor ORANGE_FAKE(221, 56, 61);
 rgbcolor YELLOW(255, 213, 0);
-rgbcolor YELLOW_FAKE(219, 170, 16);
 rgbcolor WHITE(255, 255, 255);
+
+rgbcolor RED_FAKE(131, 15, 35);
+rgbcolor GREEN_FAKE(19, 89, 64);
+rgbcolor BLUE_FAKE(18, 61, 106);
+rgbcolor ORANGE_FAKE(221, 76, 61);
+rgbcolor YELLOW_FAKE(219, 200, 16);
 rgbcolor WHITE_FAKE(210, 200, 192);
 
 hsv diff(hsv c,hsv o)
@@ -32,7 +33,7 @@ hsv diff(hsv c,hsv o)
     hsv d;
     d.h = 1.0 - abs(o.h/360.0-c.h/360.0);
     d.s = 1.0 - abs(o.s-c.s);
-    d.v = 1.0 - abs(o.v-c.v);
+    d.v = 1.0 - abs(o.v-c.v);    
     return d;
 }
 
